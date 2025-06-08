@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Du Lịch Thái Nguyên - Trang Chủ</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;700;900&display=swap');
+
+        :root {
+            --primary-color: #00796b; /* Xanh lá trà đậm */
+            --secondary-color: #005a4d;
+            --text-dark: #212529;
+            --text-light: #f8f9fa;
+            --background-light: #f4f7f6;
+            --white-color: #ffffff;
+            --shadow-color: rgba(0,0,0,0.07);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        html { scroll-behavior: smooth; }
+
+        body {
+            font-family: 'Montserrat', sans-serif;
+            line-height: 1.7;
+            background-color: var(--background-light);
+            color: var(--text-dark);
+            opacity: 0;
+            transition: opacity 0.5s ease-in-out;
+        }
+        
+        body.fade-in { opacity: 1; }
+
+        .container { width: 90%; max-width: 1200px; margin: 0 auto; }
+
+        /* --- Màn hình chờ tải trang (PRELOADER) --- */
+        .preloader {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: var(--background-light); z-index: 9999; display: flex;
+            align-items: center; justify-content: center; transition: opacity 0.5s ease, visibility 0.5s ease;
+        }
+        .preloader.hidden { opacity: 0; visibility: hidden; }
+        .spinner {
+            width: 50px; height: 50px; border: 5px solid #e0e0e0;
+            border-top-color: var(--primary-color); border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* --- Thanh điều hướng trên đỉnh --- */
+        nav {
+            background-color: rgba(255, 255, 255, 0.97); backdrop-filter: blur(10px);
+            padding: 10px 0; position: sticky; top: 0; z-index: 1000;
+            box-shadow: 0 2px 10px var(--shadow-color);
+        }
+        nav .nav-container {
+            display: flex; justify-content: space-between; align-items: center;
+            width: 90%; max-width: 1200px; margin: 0 auto;
+            position: relative; /* Thêm để định vị menu mobile */
+        }
+        .nav-logo a {
+            display: flex; align-items: center; gap: 10px; text-decoration: none;
+            color: var(--secondary-color); font-size: 1.5em; font-weight: 700;
+        }
+        
+        .nav-logo img { width: 35px; height: 35px; }
+
+        .nav-menu {
+            list-style: none;
+            display: flex;
+        }
+
+        .nav-menu li { 
+            opacity: 0; transform: translateY(-10px); 
+            animation: fadeInDown 0.5s ease forwards; 
+        }
+        .nav-menu li:nth-child(1) { animation-delay: 0.1s; }
+        .nav-menu li:nth-child(2) { animation-delay: 0.2s; }
+        .nav-menu li:nth-child(3) { animation-delay: 0.3s; }
+        .nav-menu li:nth-child(4) { animation-delay: 0.4s; }
+        .nav-menu li:nth-child(5) { animation-delay: 0.5s; }
+        .nav-menu li:nth-child(6) { animation-delay: 0.6s; }
+        .nav-menu li:nth-child(7) { animation-delay: 0.7s; }
+        @keyframes fadeInDown { to { opacity: 1; transform: translateY(0); } }
+        
+        .nav-menu a {
+            display: block; text-decoration: none; color: var(--text-dark);
+            font-weight: 500; font-size: 1em; padding: 15px; transition: color 0.3s ease;
+        }
+        nav a.active { color: var(--primary-color); font-weight: 700; }
+        nav a:not(.active):hover { color: var(--primary-color); }
+
+        .menu-toggle {
+            display: none; /* Ẩn mặc định trên desktop */
+            font-size: 2em;
+            background: none;
+            border: none;
+            color: var(--secondary-color);
+            cursor: pointer;
+        }
+
+        /* --- Reponsive cho Mobile --- */
+        @media (max-width: 768px) {
+            .menu-toggle {
+                display: block; /* Hiện nút hamburger trên mobile */
+            }
+
+            .nav-menu {
+                display: none; /* Ẩn menu đi */
+                flex-direction: column;
+                position: absolute;
+                top: 100%; /* Nằm ngay dưới nav-container */
+                left: 0;
+                width: 100%;
+                background-color: var(--white-color);
+                box-shadow: 0 4px 10px var(--shadow-color);
+                border-top: 1px solid #eee;
+            }
+
+            .nav-menu.open {
+                display: flex; /* Hiện menu khi có class 'open' */
+            }
+
+            .nav-menu ul {
+                flex-direction: column;
+                width: 100%;
+            }
+
+            .nav-menu li {
+                width: 100%;
+                animation: none; /* Bỏ animation trên mobile */
+                opacity: 1;
+                transform: none;
+            }
+
+            .nav-menu a {
+                padding: 15px;
+                text-align: left;
+                border-bottom: 1px solid #f0f0f0;
+            }
+
+             .nav-menu li:last-child a {
+                border-bottom: none;
+            }
+
+            /* Điều chỉnh kích thước chữ "Thái Nguyên Traveling" */
+            .main-title-overlay h1 {
+                font-size: 2.5em; /* Kích thước nhỏ hơn trên mobile */
+            }
+            .main-title-overlay p {
+                font-size: 1em;
+            }
+        }
+        
+        /* --- Băng chuyền hình ảnh (SLIDER) & TIÊU ĐỀ --- */
+        .slider-container {
+            width: 100%; height: 70vh; max-height: 600px; margin-top: 20px;
+            position: relative; overflow: hidden; border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            display: flex; align-items: center; justify-content: center;
+        }
+        
+        /* TIÊU ĐỀ CHÍNH TRÊN SLIDER */
+        .main-title-overlay {
+            position: absolute;
+            z-index: 11;
+            text-align: center;
+            color: var(--white-color);
+            padding: 20px;
+        }
+        
+        .main-title-overlay h1 {
+            font-size: 4.5em;
+            font-weight: 900;
+            text-shadow: 0 4px 10px rgba(0,0,0,0.5);
+            margin: 0;
+        }
+        
+        .main-title-overlay p {
+            font-size: 1.5em;
+            font-weight: 400;
+            text-shadow: 0 2px 5px rgba(0,0,0,0.5);
+            margin-top: 10px;
+            opacity: 0.9;
+        }
+        
+        .slides { display: flex; width: 100%; height: 100%; transition: transform 0.7s cubic-bezier(0.68, -0.55, 0.27, 1.55); position: absolute; top: 0; left: 0; z-index: 1; }
+        .slide { flex: 1 0 100%; height: 100%; position: relative; }
+        .slide img { width: 100%; height: 100%; object-fit: cover; filter: brightness(0.7); }
+        .slider-nav { position: absolute; top: 50%; transform: translateY(-50%); width: 100%; display: flex; justify-content: space-between; padding: 0 20px; z-index: 10; }
+        .slider-nav button { background-color: rgba(255, 255, 255, 0.2); border: 1px solid rgba(255,255,255,0.3); color: #fff; font-size: 24px; cursor: pointer; border-radius: 50%; width: 50px; height: 50px; display: flex; align-items: center; justify-content: center; transition: all 0.3s; }
+        .slider-nav button:hover { background-color: rgba(255, 255, 255, 0.5); transform: scale(1.1); }
+        .slider-dots { position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%); display: flex; gap: 10px; z-index: 10; }
+        .dot { width: 12px; height: 12px; border-radius: 50%; background-color: rgba(255, 255, 255, 0.4); border: 1px solid rgba(255,255,255,0.5); cursor: pointer; transition: all 0.3s; }
+        .dot.active { background-color: #fff; transform: scale(1.2); }
+        
+        /* --- Nội dung chính --- */
+        main { padding: 40px 0; }
+        .section-wrapper { padding: 40px; background-color: var(--white-color); border-radius: 12px; box-shadow: 0 2px 15px var(--shadow-color); margin-bottom: 30px; }
+        .intro-section { display: flex; gap: 40px; margin-bottom: 40px; align-items: center; }
+        .intro-text h2 { font-size: 2.2em; color: var(--secondary-color); margin-bottom: 20px; }
+        .intro-image { flex: 1 1 45%; border-radius: 12px; overflow: hidden; box-shadow: 0 5px 20px rgba(0,0,0,0.1); }
+        .intro-image img { width: 100%; display: block; }
+        .intro-section.reverse { flex-direction: row-reverse; }
+        .section-title { text-align: center; margin-bottom: 40px; font-size: 2.5em; color: var(--secondary-color); }
+        .collapsible-section { border-bottom: 1px solid #e9ecef; }
+        .collapsible-section:last-child { border-bottom: none; }
+        .collapsible-header { padding: 25px 10px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; }
+        .collapsible-header h3 { margin: 0; font-size: 1.4em; font-weight: 500;}
+        .arrow { font-size: 1.4em; transition: transform 0.3s; }
+        .collapsible-content { padding: 0 10px 25px; max-height: 0; overflow: hidden; transition: max-height 0.4s ease-out; }
+        .open .arrow { transform: rotate(180deg); }
+        .open .collapsible-content { max-height: 1000px; }
+        
+        /* --- Nút liên kết nổi kèm ảnh minh họa --- */
+        .scroll-image-link {
+            position: fixed;
+            bottom: 30px;
+            left: 30px;
+            z-index: 999;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.5s ease-in-out, visibility 0.5s ease-in-out, bottom 0.3s ease-out; /* Thêm "bottom" vào transition */
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .scroll-image-link.show {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .scroll-image-link a {
+            display: inline-block;
+            background-color: var(--primary-color);
+            color: var(--white-color);
+            padding: 12px 20px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 1em;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            transition: background-color 0.3s ease, transform 0.3s ease;
+        }
+
+        .scroll-image-link a:hover {
+            background-color: var(--secondary-color);
+            transform: translateY(-3px);
+        }
+
+        .scroll-image-link img {
+            width: 80px; /* Kích thước ảnh nhỏ */
+            height: 80px;
+            /* THAY ĐỔI: Chuyển từ hình tròn sang hình chữ nhật bo góc */
+            border-radius: 12px; 
+            object-fit: cover;
+            border: 3px solid var(--white-color);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+            transition: opacity 0.3s ease, transform 0.3s ease;
+            opacity: 0; /* Ẩn ảnh mặc định */
+            transform: scale(0); /* Thu nhỏ ảnh mặc định */
+        }
+
+        .scroll-image-link:hover img {
+            opacity: 1; /* Hiện ảnh khi hover */
+            transform: scale(1); /* Phóng to ảnh khi hover */
+        }
+        
+        footer { text-align: center; padding: 30px 0; background: var(--text-dark); color: var(--text-light); }
+    </style>
+</head>
+<body>
+    <div class="preloader"><div class="spinner"></div></div>
+
+    <nav>
+        <div class="nav-container">
+            <div class="nav-logo">
+                <a href="index.html">
+                    <img src="images/logo.png" alt="Logo Thái Nguyên" class="logo-img">
+                    <span>Thái Nguyên</span>
+                </a>
+            </div>
+
+            <button class="menu-toggle" onclick="toggleMenu()"> &#9776; </button>
+            
+            <ul class="nav-menu">
+                <li><a href="index.html" class="active nav-link">Trang Chủ</a></li>
+                <li><a href="chatbot.html" class="nav-link">ChatBot</a></li>
+                <li><a href="thuthach.html" class="nav-link">Thử Thách Pha Trà</a></li>
+                <li><a href="bando.html" class="nav-link">Bản Đồ</a></li>
+                <li><a href="dovui.html" class="nav-link">Đố Vui</a></li>
+                <li><a href="baibao.html" class="nav-link">Bài Báo</a></li>
+                <li><a href="lienhe.html" class="nav-link">Liên Hệ Hỗ Trợ</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="slider-container">
+            <div class="main-title-overlay">
+                <h1>Thái Nguyên Traveling</h1>
+                <p>Khám phá vẻ đẹp tiềm ẩn của Thủ đô Gió ngàn</p>
+            </div>
+
+            <div class="slides">
+                <div class="slide"><img src="https://scontent.fhan3-4.fna.fbcdn.net/v/t39.30808-6/505225923_122106525590895461_5706032708351742490_n.jpg?_nc_cat=106&ccb=1-7&_nc_sid=127cfc&_nc_ohc=Yn04A44G6aMQ7kNvwGq-5-P&_nc_oc=AdkJEmOBB6RUoKQZnsCF9eP0NFG9B7M78kldNQsBuF3obm0XmxJkIzas1JExu4dGu4LTYTu_EvvH-yH9cf3lnBzz&_nc_zt=23&_nc_ht=scontent.fhan3-4.fna&_nc_gid=AZlARZXkGlexfZ1Il4lfYg&oh=00_AfPtZPZ0j0XG3RDlITg_hTFQIADa1v7bFjS0DY5rxnfAJw&oe=684AE22B" alt="Cảnh đẹp Thái Nguyên 1"></div>
+                <div class="slide"><img src="https://scontent.fhan4-6.fna.fbcdn.net/v/t39.30808-6/505528079_122106525542895461_1776693076059769984_n.jpg?_nc_cat=109&ccb=1-7&_nc_sid=127cfc&_nc_ohc=0hxgNwsWa48Q7kNvwGeW65I&_nc_oc=Admch3VzCQrJwGgQvTCkSIX5675Y6niKj86M4zuE457_3s5MQ-ZCHuaOqP4Tj1pWPBqmfRUkkZqrW-lKS5gxAW2R&_nc_zt=23&_nc_ht=scontent.fhan4-6.fna&_nc_gid=Uy-08Dzs6ZR16Yl2kQKxXw&oh=00_AfMdPD5kAMhdfoA74WIGWcLgCXxSpND0z-NUDK8IMBkymw&oe=684AF554" alt="Cảnh đẹp Thái Nguyên 2"></div>
+                <div class="slide"><img src="https://scontent.fhan4-1.fna.fbcdn.net/v/t39.30808-6/505181470_122106525584895461_6599908896038736743_n.jpg?_nc_cat=105&ccb=1-7&_nc_sid=127cfc&_nc_ohc=NtrhJD6tf7cQ7kNvwEJD4IO&_nc_oc=AdlTu-zh1S2HlXDVX2NUV1Nu4q9s-P50bG-uQD5A3f322WW2od2WLgVgU3oxTnjU8HizotAiecLoxDBv9xpZ9Flc&_nc_zt=23&_nc_ht=scontent.fhan4-1.fna&_nc_gid=UM0NJuoeGENA35BK-T0xJQ&oh=00_AfOoe0KJoD89NHpEQ5_Sw9_QUOZbzvjSgaafzHRnzrEM-g&oe=684ACF80" alt="Cảnh đẹp Thái Nguyên 3"></div>
+                <div class="slide"><img src="https://scontent.fhan3-3.fna.fbcdn.net/v/t39.30808-6/505184943_122106525662895461_3500668906339384547_n.jpg?_nc_cat=101&ccb=1-7&_nc_sid=127cfc&_nc_ohc=23og7FhjHx8Q7kNvwE9pA5E&_nc_oc=AdnCnH61csSxhJvObqK9gABUb11dXY0dioWNQmK-aGJ9LAl_uDH8kRHdCnInSXzeuVIRF6vruANJa42_1WTa4-HN&_nc_zt=23&_nc_ht=scontent.fhan3-3.fna&_nc_gid=4-2tyl_ssJXYzqDTfR8rOA&oh=00_AfP5XjsKFE-8J9FIp5MEVkLkLOzFOrh-KHBKS3jK-T0IHw&oe=684AC5EE" alt="Cảnh đẹp Thái Nguyên 4"></div>
+                <div class="slide"><img src="https://scontent.fhan3-3.fna.fbcdn.net/v/t39.30808-6/505184436_122106525698895461_7426263015711121054_n.jpg?_nc_cat=111&ccb=1-7&_nc_sid=127cfc&_nc_ohc=HY28yjAWp8cQ7kNvwGyhX65&_nc_oc=AdkH2SysVzNT7doXKOzli_mlWpI5LuphaQpA37TvAf_jX1e-LcEIiX8w5o4xemRX3zBfQUzY_D7pghMirlqFn8ma&_nc_zt=23&_nc_ht=scontent.fhan3-3.fna&_nc_gid=qh9m6AOHkW_5A6Iw9LSv-g&oh=00_AfOpUlmjAQSNTpPdCtC0NBq0nDq8X4UiBg81DfegouiwOg&oe=684AEA47" alt="Cảnh đẹp Thái Nguyên 5"></div>
+                <div class="slide"><img src="https://scontent.fhan4-6.fna.fbcdn.net/v/t39.30808-6/505250961_122106526130895461_515629603211087198_n.jpg?_nc_cat=108&ccb=1-7&_nc_sid=127cfc&_nc_ohc=V53vFTpD0i4Q7kNvwGVYu7d&_nc_oc=Adkta-PyLExbfBRGB--TH1-DlDnPtJkdBHp-_mlDieaqr-RqxCO_WwRNQF8xOivMsZ5-5XtqPEam7qnBqs1nz47n&_nc_zt=23&_nc_ht=scontent.fhan4-6.fna&_nc_gid=goG5qO-AxIfhNxRXhfH7Ig&oh=00_AfPjQoGlWm8WKMyQCf-VqBADC9vzG749NpFthGmd1NNmYw&oe=684AC581" alt="Cảnh đẹp Thái Nguyên 6"></div>
+            </div>
+            <div class="slider-nav"><button id="prevBtn">&#10094;</button><button id="nextBtn">&#10095;</button></div>
+            <div class="slider-dots" id="slider-dots"></div>
+        </div>
+        
+        <main>
+            <div class="section-wrapper">
+                <h2 class="section-title">Những Nét Đặc Trưng</h2>
+
+                <div class="collapsible-section">
+                    <div class="collapsible-header" onclick="toggleSection(this)">
+                        <h3>📍 Vị trí "Cửa ngõ" chiến lược</h3>
+                        <span class="arrow">&#9660;</span>
+                    </div>
+                    <div class="collapsible-content">
+                        <p>Thái Nguyên là trung tâm của vùng trung du miền núi Bắc Bộ, đóng vai trò là cầu nối quan trọng giữa các tỉnh miền núi và đồng bằng sông Hồng. Chỉ cách Hà Nội 80km, vị trí này không chỉ thuận lợi cho giao thương kinh tế mà còn biến Thái Nguyên thành điểm khởi đầu lý tưởng để khám phá toàn bộ vùng Việt Bắc.</p>
+                    </div>
+                </div>
+
+                <div class="collapsible-section">
+                    <div class="collapsible-header" onclick="toggleSection(this)">
+                        <h3>🏛️ "Thủ đô Gió ngàn" - Cái nôi Cách mạng</h3>
+                        <span class="arrow">&#9660;</span>
+                    </div>
+                    <div class="collapsible-content">
+                        <p>Trong kháng chiến chống Pháp, Thái Nguyên vinh dự được chọn làm "An Toàn Khu" (ATK), là đại bản doanh của Trung ương Đảng và Chính phủ. Di tích lịch sử quốc gia đặc biệt ATK Định Hóa ngày nay là một "địa chỉ đỏ" để du khách về nguồn, tìm hiểu về một giai đoạn lịch sử hào hùng của dân tộc tại những địa danh như đồi Tỉn Keo, khuôn Tát, đèo De, núi Hồng...</p>
+                    </div>
+                </div>
+
+                <div class="collapsible-section">
+                    <div class="collapsible-header" onclick="toggleSection(this)">
+                        <h3>🏞️ Thiên nhiên hữu tình, đa dạng</h3>
+                        <span class="arrow">&#9660;</span>
+                    </div>
+                    <div class="collapsible-content">
+                        <p>Thái Nguyên sở hữu vẻ đẹp đa dạng từ những dãy núi hùng vĩ của vòng cung Ngân Sơn - Yên Lạc cho đến vùng hồ Núi Cốc thơ mộng. Nơi đây còn có nhiều cảnh quan thiên nhiên kỳ thú như hang Phượng Hoàng, suối Mỏ Gà, thác Bảy Tầng... tạo điều kiện phát triển du lịch sinh thái và mạo hiểm.</p>
+                    </div>
+                </div>
+
+                <div class="collapsible-section">
+                    <div class="collapsible-header" onclick="toggleSection(this)">
+                        <h3>🍵 Văn hóa Trà "Đệ nhất danh trà"</h3>
+                        <span class="arrow">&#9660;</span>
+                    </div>
+                    <div class="collapsible-content">
+                        <p>Nhắc đến Thái Nguyên là nhắc đến chè. Vùng chè đặc sản Tân Cương đã nổi danh khắp trong và ngoài nước với hương thơm cốm non đặc trưng và vị chát dịu, hậu ngọt sâu. Du lịch Thái Nguyên, du khách có cơ hội tham quan những đồi chè xanh mướt, tự tay hái chè, sao chè và thưởng thức những ấm trà nóng hổi ngay tại nơi sản sinh ra nó.</p>
+                    </div>
+                </div>
+
+                <div class="collapsible-section">
+                    <div class="collapsible-header" onclick="toggleSection(this)">
+                        <h3>👥 Vườn hoa văn hóa các dân tộc</h3>
+                        <span class="arrow">&#9660;</span>
+                    </div>
+                    <div class="collapsible-content">
+                        <p>Thái Nguyên là mái nhà chung của 8 dân tộc anh em (Kinh, Tày, Nùng, Sán Dìu, H'Mông, Sán Chay, Dao, Hoa). Sự đa dạng này tạo nên một bức tranh văn hóa đầy màu sắc, thể hiện qua trang phục, lễ hội (Lồng Tồng của người Tày), ẩm thực và các làng nghề thủ công truyền thống. Bảo tàng Văn hóa các dân tộc Việt Nam đặt tại Thái Nguyên chính là nơi lưu giữ và trưng bày di sản văn hóa phong phú này.</p>
+                    </div>
+                </div>
+                      <div class="collapsible-section">
+                    <div class="collapsible-header" onclick="toggleSection(this)">
+                        <h3>🍲 Ẩm thực đặc sắc</h3>
+                        <span class="arrow">&#9660;</span>
+                    </div>
+                    <div class="collapsible-content">
+                        <p>Ngoài chè, Thái Nguyên còn chiêu đãi du khách bằng nhiều món ngon độc đáo như nem chua Đại Từ, bánh cooc mò của người Tày, cơm lam Định Hóa, trám đen Hà Châu, bánh ngải của người Tày-Nùng và nhiều món ăn chế biến từ sản vật địa phương.</p>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <div class="scroll-image-link">
+        <img src="https://scontent.fhan4-6.fna.fbcdn.net/v/t39.30808-6/505219047_122106542906895461_3109683894517565187_n.jpg?_nc_cat=109&ccb=1-7&_nc_sid=127cfc&_nc_ohc=cxecylLMe8gQ7kNvwE_idgZ&_nc_oc=Admkmm9lviJ9CZsCbaM_uZvjlx7hKeiKHScrtkzVAAW8cvox3WVrkg5x7X0zYWscsDt2zG68xQQexNmdiZk4Nzam&_nc_zt=23&_nc_ht=scontent.fhan4-6.fna&_nc_gid=bTB5npQ7EkWl7M-V1znH_Q&oh=00_AfMYyguGuKFXFaTEOAIOsElwa-LBqkOymq8j3p0fvqo7qg&oe=684AD7C5" alt="Ảnh minh họa"> <a href="https://www.facebook.com/share/v/19oCjZoo8j/">Like Bài Viết !</a>
+    </div>
+    
+    <footer><p>&copy; 2025 Thái Nguyên Footprints. Mọi quyền được bảo lưu.</p>
+        <p>Đ/c: Phú Bình - Thái Nguyên</p></footer>
+
+    <script>
+        // --- LOGIC CHO HIỆU ỨNG CHUYỂN TRANG & PRELOADER ---
+        const preloader = document.querySelector('.preloader');
+        const navLinks = document.querySelectorAll('.nav-link');
+        window.addEventListener('load', () => { preloader.classList.add('hidden'); document.body.classList.add('fade-in'); });
+        navLinks.forEach(link => { link.addEventListener('click', e => { if (link.href === window.location.href || !link.href.startsWith('http')) return; e.preventDefault(); const destination = link.href; document.body.classList.remove('fade-in'); setTimeout(() => { window.location.href = destination; }, 500); }); });
+
+        // --- LOGIC CHO SLIDER ---
+        const sliderContainer = document.querySelector('.slider-container');
+        if (sliderContainer) {
+            const slides = sliderContainer.querySelector('.slides');
+            const slide = sliderContainer.querySelectorAll('.slide');
+            const prevBtn = document.getElementById('prevBtn');
+            const nextBtn = document.getElementById('nextBtn');
+            const dotsContainer = document.getElementById('slider-dots');
+            let currentIndex = 0; let slideInterval;
+            if(slide.length > 0) {
+                slide.forEach((_, i) => { const dot = document.createElement('div'); dot.classList.add('dot'); if (i === 0) dot.classList.add('active'); dot.addEventListener('click', () => { goToSlide(i); resetInterval(); }); dotsContainer.appendChild(dot); });
+                const dots = dotsContainer.querySelectorAll('.dot');
+                function updateDots() { dots.forEach((dot, i) => { dot.classList.toggle('active', i === currentIndex); }); }
+                function goToSlide(index) { if (index < 0) { index = slide.length - 1; } else if (index >= slide.length) { index = 0; } slides.style.transform = `translateX(-${index * 100}%)`; currentIndex = index; updateDots(); }
+                function nextSlide() { goToSlide(currentIndex + 1); }
+                function prevSlide() { goToSlide(currentIndex - 1); }
+                function startInterval() { slideInterval = setInterval(nextSlide, 5000); }
+                function resetInterval() { clearInterval(slideInterval); startInterval(); }
+                nextBtn.addEventListener('click', () => { nextSlide(); resetInterval(); });
+                prevBtn.addEventListener('click', () => { prevSlide(); resetInterval(); });
+                startInterval();
+            }
+        }
+
+        // --- LOGIC CHO CÁC MỤC THU GỌN ---
+        function toggleSection(header) {
+            const section = header.parentNode;
+            section.classList.toggle('open');
+        }
+
+        // --- LOGIC CHO MENU HAMBURGER ---
+        function toggleMenu() {
+            // Tìm menu ul nằm bên trong thẻ nav
+            const menu = document.querySelector('nav .nav-menu');
+            menu.classList.toggle('open');
+        }
+
+        // --- CẬP NHẬT: LOGIC CHO NÚT LIÊN KẾT NỔI ĐỂ KHÔNG CHE FOOTER ---
+        const scrollImageLink = document.querySelector('.scroll-image-link');
+        const footer = document.querySelector('footer');
+
+        function handleScrollImageLink() {
+            const scrollThreshold = 400; // Hiện nút sau khi cuộn 400px
+
+            if (window.scrollY > scrollThreshold) {
+                scrollImageLink.classList.add('show');
+            } else {
+                scrollImageLink.classList.remove('show');
+            }
+            
+            // Tính toán vị trí để tránh che footer
+            const footerRect = footer.getBoundingClientRect();
+            const viewportHeight = window.innerHeight;
+
+            if (footerRect.top < viewportHeight) {
+                // Khi đỉnh của footer chạm vào màn hình, đẩy nút lên trên
+                const newBottomPosition = viewportHeight - footerRect.top + 20; // 20px là khoảng cách với footer
+                scrollImageLink.style.bottom = `${newBottomPosition}px`;
+            } else {
+                // Reset về vị trí mặc định khi footer chưa vào màn hình
+                scrollImageLink.style.bottom = '30px';
+            }
+        }
+        
+        window.addEventListener('scroll', handleScrollImageLink);
+        // Gọi hàm một lần khi tải trang để kiểm tra vị trí ban đầu
+        handleScrollImageLink();
+
+
+        (function(){if(!window.chatbase||window.chatbase("getState")!=="initialized"){window.chatbase=(...arguments)=>{if(!window.chatbase.q){window.chatbase.q=[]}window.chatbase.q.push(arguments)};window.chatbase=new Proxy(window.chatbase,{get(target,prop){if(prop==="q"){return target.q}return(...args)=>target(prop,...args)}})}const onLoad=function(){const script=document.createElement("script");script.src="https://www.chatbase.co/embed.min.js";script.id="Y36JqxzS7N6nBgADgNxNM";script.domain="www.chatbase.co";document.body.appendChild(script)};if(document.readyState==="complete"){onLoad()}else{window.addEventListener("load",onLoad)}})();
+
+    </script>
+</body>
+</html>

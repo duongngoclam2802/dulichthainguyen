@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>Chatbot</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;700;900&display=swap');
+
+        :root {
+            --primary-color: #00796b;
+            --secondary-color: #005a4d;
+            --text-dark: #212529;
+            --text-light: #f8f9fa;
+            --background-light: #f4f7f6;
+            --white-color: #ffffff;
+            --shadow-color: rgba(0,0,0,0.07);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
+
+        body {
+            font-family: 'Montserrat', sans-serif;
+            line-height: 1.7;
+            background-color: var(--background-light);
+            color: var(--text-dark);
+            opacity: 0;
+            transition: opacity 0.5s ease-in-out;
+        }
+        body.fade-in { opacity: 1; }
+
+        nav {
+            background-color: rgba(255, 255, 255, 0.97);
+            backdrop-filter: blur(10px);
+            padding: 10px 0;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 10px var(--shadow-color);
+        }
+
+        .nav-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 90%;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .nav-logo a {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+            color: var(--secondary-color);
+            font-size: 1.5em;
+            font-weight: 700;
+            /* Đảm bảo logo không bị co lại trên màn hình nhỏ */
+            flex-shrink: 0; 
+        }
+
+        .nav-logo img {
+            width: 35px;
+            height: 35px;
+        }
+
+        nav ul {
+            list-style: none;
+            display: flex;
+            flex-wrap: nowrap; /* Đảm bảo các mục menu nằm trên một hàng */
+            overflow-x: auto; /* Cho phép cuộn ngang nếu nội dung quá dài (chủ yếu cho máy tính nếu có quá nhiều mục) */
+            -webkit-overflow-scrolling: touch; /* Cải thiện trải nghiệm cuộn trên iOS */
+        }
+
+        nav ul li {
+            opacity: 0;
+            transform: translateY(-10px);
+            animation: fadeInDown 0.5s ease forwards;
+            flex-shrink: 0; /* Đảm bảo các mục menu không bị co lại */
+        }
+
+        /* Animation delay cho từng mục menu */
+        nav ul li:nth-child(1) { animation-delay: 0.1s; }
+        nav ul li:nth-child(2) { animation-delay: 0.2s; }
+        nav ul li:nth-child(3) { animation-delay: 0.3s; }
+        nav ul li:nth-child(4) { animation-delay: 0.4s; }
+        nav ul li:nth-child(5) { animation-delay: 0.5s; }
+        nav ul li:nth-child(6) { animation-delay: 0.6s; }
+        nav ul li:nth-child(7) { animation-delay: 0.7s; }
+
+        @keyframes fadeInDown {
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        nav a {
+            display: block;
+            text-decoration: none;
+            color: var(--text-dark);
+            font-weight: 500;
+            font-size: 1em;
+            padding: 15px;
+            transition: color 0.3s ease;
+            white-space: nowrap; /* Ngăn chữ bị xuống dòng */
+        }
+
+        nav a.active {
+            color: var(--primary-color);
+            font-weight: 700;
+        }
+
+        nav a:not(.active):hover {
+            color: var(--primary-color);
+        }
+
+        /* Hamburger icon */
+        .hamburger {
+            display: none; /* Mặc định ẩn trên màn hình lớn */
+            cursor: pointer;
+            padding: 10px;
+            z-index: 1001; /* Đảm bảo hamburger nằm trên menu khi mở */
+        }
+
+        .hamburger .bar {
+            display: block;
+            width: 25px;
+            height: 3px;
+            margin: 5px auto;
+            background-color: var(--text-dark);
+            transition: all 0.3s ease-in-out;
+        }
+
+        /* Animation cho hamburger khi mở/đóng */
+        .hamburger.is-active .bar:nth-child(1) {
+            transform: translateY(8px) rotate(45deg);
+        }
+        .hamburger.is-active .bar:nth-child(2) {
+            opacity: 0;
+        }
+        .hamburger.is-active .bar:nth-child(3) {
+            transform: translateY(-8px) rotate(-45deg);
+        }
+
+        .chatbot-container {
+            width: 100%;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .chatbot-iframe {
+            flex: 1;
+            width: 100%;
+            border: none;
+        }
+
+        /* --- Media Queries cho responsive design --- */
+        @media (max-width: 768px) { /* Điều chỉnh breakpoint theo ý muốn */
+            nav ul {
+                display: none; /* Ẩn menu trên điện thoại */
+                flex-direction: column;
+                position: absolute;
+                top: 60px; /* Vị trí dưới thanh điều hướng */
+                left: 0;
+                width: 100%;
+                background-color: rgba(255, 255, 255, 0.97);
+                box-shadow: 0 5px 15px var(--shadow-color);
+                transition: all 0.3s ease-in-out;
+                overflow-y: auto; /* Cho phép cuộn nếu menu quá dài */
+                max-height: calc(100vh - 60px); /* Giới hạn chiều cao để không tràn màn hình */
+            }
+
+            nav ul.is-active {
+                display: flex; /* Hiển thị menu khi hamburger được nhấp */
+            }
+
+            nav ul li {
+                width: 100%; /* Các mục menu chiếm toàn bộ chiều rộng */
+                text-align: center;
+                animation: none; /* Tắt animation cho từng mục menu trên mobile để tránh giật lag */
+                opacity: 1; /* Đảm bảo hiển thị ngay */
+                transform: translateY(0);
+            }
+
+            nav a {
+                padding: 10px 0; /* Giảm padding trên điện thoại */
+            }
+
+            .hamburger {
+                display: block; /* Hiển thị hamburger icon trên điện thoại */
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <div class="nav-container">
+            <div class="nav-logo">
+                <a href="index.html">
+                    <img src="images/logo.png" alt="Logo Thái Nguyên" class="logo-img">
+                        <path d="M50 95C50 95 95 80 95 50C95 20 50 5 50 5C50 5 5 20 5 50C5 80 50 95 50 95Z" stroke="currentColor" stroke-width="8"/>
+                        <path d="M50 5V55C50 55 65 50 75 40" stroke="currentColor" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                    <span>Thái Nguyên</span>
+                </a>
+            </div>
+            <div class="hamburger" id="hamburger">
+                <span class="bar"></span>
+                <span class="bar"></span>
+                <span class="bar"></span>
+            </div>
+            <ul id="nav-menu">
+                <li><a href="index.html" class="nav-link">Trang Chủ</a></li>
+                <li><a href="chatbot.html" class="active nav-link">ChatBot</a></li>
+                <li><a href="thuthach.html" class="nav-link">Thử Thách Pha Trà</a></li>
+                <li><a href="bando.html" class="nav-link">Bản Đồ</a></li>
+                <li><a href="dovui.html" class="nav-link">Đố Vui</a></li>
+                <li><a href="baibao.html" class="nav-link">Bài Báo</a></li>
+                <li><a href="lienhe.html" class="nav-link">Liên Hệ Hỗ Trợ</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="chatbot-container">
+        <iframe
+            class="chatbot-iframe"
+            src="https://www.chatbase.co/chatbot-iframe/Y36JqxzS7N6nBgADgNxNM"
+            allow="microphone; clipboard-write"
+        ></iframe>
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            // Hiệu ứng fade-in cho body
+            document.body.classList.add("fade-in");
+
+            // Xử lý đóng mở menu trên di động
+            const hamburger = document.getElementById('hamburger');
+            const navMenu = document.getElementById('nav-menu');
+
+            hamburger.addEventListener('click', () => {
+                hamburger.classList.toggle('is-active');
+                navMenu.classList.toggle('is-active');
+            });
+
+            // Đóng menu khi click ra ngoài (chỉ trên di động)
+            document.addEventListener('click', (e) => {
+                if (window.innerWidth <= 768 && !navMenu.contains(e.target) && !hamburger.contains(e.target) && navMenu.classList.contains('is-active')) {
+                    hamburger.classList.remove('is-active');
+                    navMenu.classList.remove('is-active');
+                }
+            });
+
+            // Đóng menu khi một liên kết được nhấp (trên di động)
+            navMenu.querySelectorAll('.nav-link').forEach(link => {
+                link.addEventListener('click', () => {
+                    if (window.innerWidth <= 768) {
+                        hamburger.classList.remove('is-active');
+                        navMenu.classList.remove('is-active');
+                    }
+                });
+            });
+
+            // Đóng menu khi thay đổi kích thước cửa sổ (ví dụ: xoay ngang điện thoại)
+            window.addEventListener('resize', () => {
+                if (window.innerWidth > 768) {
+                    hamburger.classList.remove('is-active');
+                    navMenu.classList.remove('is-active');
+                }
+            });
+        });
+    </script>
+</body>
+</html>

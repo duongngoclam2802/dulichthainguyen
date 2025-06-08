@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bản đồ Du lịch Thái Nguyên (OpenStreetMap)</title>
+
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"/>
+
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;700;900&display=swap');
+
+    :root {
+        --primary-color: #00796b;
+        --secondary-color: #005a4d;
+        --text-dark: #212529;
+        --text-light: #f8f9fa;
+        --background-light: #f4f7f6;
+        --white-color: #ffffff;
+        --shadow-color: rgba(0,0,0,0.07);
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+
+    /* SỬA LỖI LAYOUT: Dùng Flexbox để quản lý layout chính */
+    html {
+        height: 100%;
+    }
+    body {
+        display: flex;
+        flex-direction: column;
+        height: 100vh; /* Quan trọng: body chiếm toàn bộ chiều cao màn hình */
+        font-family: 'Montserrat', sans-serif;
+        line-height: 1.7;
+        background-color: var(--background-light);
+        color: var(--text-dark);
+        opacity: 0;
+        transition: opacity 0.5s ease-in-out;
+    }
+    
+    body.fade-in { opacity: 1; }
+
+    /* --- CSS CHO THANH ĐIỀU HƯỚNG --- */
+    nav {
+        flex-shrink: 0; /* Ngăn nav co lại */
+        background-color: rgba(255, 255, 255, 0.97);
+        backdrop-filter: blur(10px);
+        padding: 10px 0;
+        position: sticky;
+        top: 0;
+        z-index: 1002; /* z-index cao hơn để luôn ở trên */
+        box-shadow: 0 2px 10px var(--shadow-color);
+    }
+    nav .nav-container {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        width: 90%;
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+    .nav-logo a {
+        display: flex; align-items: center; gap: 10px;
+        text-decoration: none; color: var(--secondary-color);
+        font-size: 1.5em; font-weight: 700;
+        /* Đảm bảo logo không bị co lại */
+        flex-shrink: 0; 
+    }
+    .nav-logo img { width: 35px; height: 35px; }
+
+    /* Menu cho desktop */
+    nav ul { 
+        list-style: none; 
+        display: flex; 
+        /* Đảm bảo các mục menu không bị co lại */
+        flex-shrink: 0;
+    }
+    nav a {
+        display: block; text-decoration: none; color: var(--text-dark);
+        font-weight: 500; font-size: 1em; padding: 15px;
+        transition: color 0.3s ease;
+        /* Đảm bảo các chữ không bị chèn ép */
+        white-space: nowrap;
+    }
+    nav a.active { color: var(--primary-color); font-weight: 700; }
+    nav a:not(.active):hover { color: var(--primary-color); }
+
+    /* Nút hamburger menu (chỉ hiển thị trên mobile) */
+    .hamburger-menu {
+        display: none; /* Mặc định ẩn */
+        font-size: 1.8em;
+        cursor: pointer;
+        color: var(--text-dark);
+    }
+
+    /* Off-canvas menu (menu ẩn) */
+    .mobile-menu {
+        display: flex;
+        flex-direction: column;
+        position: fixed;
+        top: 0;
+        right: -300px; /* Bắt đầu ẩn ngoài màn hình */
+        width: 250px; /* Chiều rộng menu */
+        height: 100%;
+        background-color: rgba(255, 255, 255, 0.97);
+        backdrop-filter: blur(10px);
+        box-shadow: -2px 0 10px rgba(0,0,0,0.1);
+        z-index: 1003;
+        transition: right 0.3s ease-in-out;
+        padding-top: 20px;
+    }
+    .mobile-menu.open {
+        right: 0; /* Hiện menu */
+    }
+    .mobile-menu ul {
+        list-style: none;
+        display: flex;
+        flex-direction: column;
+        padding: 0;
+    }
+    .mobile-menu li a {
+        padding: 15px 20px;
+        color: var(--text-dark);
+        text-decoration: none;
+        display: block;
+        border-bottom: 1px solid #eee;
+        white-space: nowrap;
+    }
+    .mobile-menu li:last-child a {
+        border-bottom: none;
+    }
+    .mobile-menu li a:hover {
+        background-color: var(--background-light);
+        color: var(--primary-color);
+    }
+    .close-mobile-menu {
+        font-size: 2em;
+        cursor: pointer;
+        align-self: flex-end;
+        padding: 10px 20px;
+        color: #999;
+        transition: color 0.3s ease;
+    }
+    .close-mobile-menu:hover {
+        color: #333;
+    }
+
+    /* --- CSS CHUNG CHO BẢN ĐỒ --- */
+    #map-container {
+        flex-grow: 1; /* Quan trọng: map container chiếm hết không gian còn lại */
+        position: relative;
+        overflow: hidden;
+    }
+
+    #map {
+        width: 100%;
+        height: 100%;
+    }
+
+    /* CSS cho thanh điều khiển tìm kiếm */
+    #controls {
+        position: absolute; top: 20px; left: 50%;
+        transform: translateX(-50%); z-index: 1000;
+        background-color: white; padding: 10px; border-radius: 8px;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+        width: 90%; max-width: 400px;
+    }
+
+    #search-input {
+        width: 100%; padding: 10px; font-size: 16px;
+        border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box;
+    }
+
+    #suggestions-container {
+        background-color: white; border: 1px solid #ddd;
+        border-top: none; max-height: 200px; overflow-y: auto;
+        display: none; z-index: 1001;
+    }
+
+    .suggestion-item { padding: 10px; cursor: pointer; }
+    .suggestion-item:hover { background-color: #f0f0f0; }
+
+    /* CSS cho popup */
+    .popup-content h3 { margin: 0 0 5px 0; color: var(--secondary-color); }
+    .popup-content p { margin: 0 0 10px 0; font-size: 0.9em; color: #555; }
+    .directions-button {
+        background-color: var(--primary-color); color: white; padding: 8px 12px;
+        border: none; border-radius: 4px; cursor: pointer;
+        font-size: 14px; margin-top: 5px; transition: background-color 0.3s;
+    }
+    .directions-button:hover { background-color: var(--secondary-color); }
+
+    /* --- CSS NÂNG CẤP CHO MENU BẢN ĐỒ (hiển thị trên mobile) --- */
+    /* Nút mở menu chính (trên bản đồ) */
+    .leaflet-control-menu a {
+        background-color: white; border-radius: 8px;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        width: 40px; height: 40px; line-height: 40px;
+        cursor: pointer; text-align: center; display: block;
+        border: 1px solid #ddd;
+    }
+    .leaflet-control-menu i { font-size: 18px; color: #333; }
+    .leaflet-control-zoom a { border-radius: 8px !important; border: 1px solid #ddd !important; }
+
+    #menu-panel {
+        position: absolute; top: 0; left: -320px;
+        width: 320px; height: 100%; background-color: #ffffff;
+        box-shadow: 4px 0 15px rgba(0,0,0,0.1); z-index: 1001;
+        transition: left 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        display: flex; flex-direction: column;
+    }
+    #menu-panel.open { left: 0; }
+
+    #menu-header {
+        padding: 20px; border-bottom: 1px solid #eee; display: flex;
+        justify-content: space-between; align-items: center; flex-shrink: 0;
+    }
+    #menu-header h2 { margin: 0; font-size: 1.25em; color: #2c3e50; }
+    #close-menu-btn {
+        font-size: 1.5em; cursor: pointer; background: none; border: none;
+        padding: 5px; color: #999; transition: color 0.3s ease;
+    }
+    #close-menu-btn:hover { color: #333; }
+    
+    #menu-items { overflow-y: auto; flex-grow: 1; padding: 10px; }
+    #menu-items::-webkit-scrollbar { width: 8px; }
+    #menu-items::-webkit-scrollbar-track { background: #f1f1f1; }
+    #menu-items::-webkit-scrollbar-thumb { background: #ccc; border-radius: 4px; }
+    #menu-items::-webkit-scrollbar-thumb:hover { background: #aaa; }
+
+    .menu-item {
+        display: flex; align-items: flex-start; gap: 15px; padding: 15px;
+        border-bottom: 1px solid #f0f0f0; cursor: pointer;
+        transition: background-color 0.2s ease-in-out;
+    }
+    .menu-item:last-child { border-bottom: none; }
+    .menu-item:hover { background-color: #f5faff; }
+    .menu-item-icon { font-size: 1.1em; color: var(--primary-color); padding-top: 2px; }
+    .menu-item-content { flex: 1; }
+    .menu-item .item-name { font-weight: 600; color: #333; font-size: 1em; }
+    .menu-item .item-desc { font-size: 0.85em; color: #666; margin-top: 5px; line-height: 1.4; }
+
+    /* --- Media Queries cho Responsive Design --- */
+    @media (max-width: 768px) {
+        nav ul {
+            display: none; /* Ẩn menu điều hướng trên mobile */
+        }
+        .hamburger-menu {
+            display: block; /* Hiển thị nút hamburger */
+        }
+        nav .nav-container {
+            width: 95%; /* Tăng chiều rộng trên mobile */
+            padding: 0 10px; /* Thêm padding ngang */
+        }
+        .nav-logo a {
+            font-size: 1.3em; /* Giảm kích thước logo */
+        }
+        .nav-logo img { width: 35px; height: 35px; }
+
+        /* Điều chỉnh thanh tìm kiếm trên mobile */
+        #controls {
+            width: 95%; /* Tăng chiều rộng thanh tìm kiếm */
+            top: 15px; /* Dịch lên trên một chút */
+            padding: 8px; /* Giảm padding */
+        }
+        #search-input {
+            font-size: 15px; /* Giảm kích thước chữ */
+        }
+
+        /* Điều chỉnh menu panel (menu danh sách địa điểm) */
+        #menu-panel {
+            width: 80%; /* Chiều rộng menu panel trên mobile */
+            max-width: 300px; /* Giới hạn chiều rộng tối đa */
+            left: -80%; /* Ẩn ngoài màn hình */
+        }
+        #menu-panel.open {
+            left: 0;
+        }
+        #menu-header {
+            padding: 15px;
+        }
+        #menu-header h2 {
+            font-size: 1.1em;
+        }
+    }
+
+    @media (max-width: 480px) {
+        /* Điều chỉnh thêm cho màn hình rất nhỏ */
+        .nav-logo a span {
+            display: none; /* Ẩn chữ "Thái Nguyên" chỉ giữ icon */
+        }
+    }
+</style>
+</head>
+<body>
+<nav>
+    <div class="nav-container">
+        <div class="nav-logo">
+            <a href="index.html">
+                <img src="images/logo.png" alt="Logo Thái Nguyên" class="logo-img">
+                    <path d="M50 95C50 95 95 80 95 50C95 20 50 5 50 5C50 5 5 20 5 50C5 80 50 95 50 95Z" stroke="currentColor" stroke-width="8"/>
+                    <path d="M50 5V55C50 55 65 50 75 40" stroke="currentColor" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                <span>Thái Nguyên</span>
+            </a>
+        </div>
+        <ul class="desktop-nav">
+            <li><a href="index.html" class="nav-link">Trang Chủ</a></li>
+            <li><a href="chatbot.html" class="nav-link">ChatBot</a></li>
+            <li><a href="thuthach.html" class="nav-link">Thử Thách Pha Trà</a></li>
+            <li><a href="bando.html" class="active nav-link">Bản Đồ</a></li>
+            <li><a href="dovui.html" class="nav-link">Đố Vui</a></li>
+            <li><a href="baibao.html" class="nav-link">Bài Báo</a></li>
+            <li><a href="lienhe.html" class="nav-link">Liên Hệ</a></li>
+        </ul>
+        <div class="hamburger-menu">
+            <i class="fas fa-bars"></i>
+        </div>
+    </div>
+</nav>
+
+<div class="mobile-menu">
+    <div class="close-mobile-menu"><i class="fas fa-times"></i></div>
+    <ul>
+        <li><a href="index.html" class="nav-link">Trang Chủ</a></li>
+        <li><a href="chatbot.html" class="nav-link">ChatBot</a></li>
+        <li><a href="thuthach.html" class="nav-link">Thử Thách Pha Trà</a></li>
+        <li><a href="bando.html" class="active nav-link">Bản Đồ</a></li>
+        <li><a href="dovui.html" class="nav-link">Đố Vui</a></li>
+        <li><a href="baibao.html" class="nav-link">Bài Báo</a></li>
+        <li><a href="lienhe.html" class="nav-link">Liên Hệ Hỗ Trợ</a></li>
+    </ul>
+</div>
+
+<div id="map-container">
+    <div id="controls">
+        <input type="text" id="search-input" placeholder="Tìm kiếm địa danh ở Thái Nguyên...">
+        <div id="suggestions-container"></div>
+    </div>
+    <div id="map"></div>
+    <div id="menu-panel">
+        <div id="menu-header">
+            <h2>Địa điểm nổi bật</h2>
+            <button id="close-menu-btn"><i class="fas fa-times"></i></button>
+        </div>
+        <div id="menu-items"></div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    // Kích hoạt hiệu ứng fade-in
+    document.body.classList.add('fade-in');
+
+    const locations = [
+        { name: "Hồ Núi Cốc", lat: 21.5839, lng: 105.7107, description: "Khu du lịch sinh thái nổi tiếng bậc nhất tỉnh." },
+        { name: "Bảo tàng Văn hóa các dân tộc Việt Nam", lat: 21.5915, lng: 105.8457, description: "Nơi lưu giữ văn hóa của 54 dân tộc anh em." },
+        { name: "Đền Đuổm", lat: 21.7821, lng: 105.7878, description: "Ngôi đền cổ thờ danh tướng Dương Tự Minh." },
+        { name: "Khu di tích ATK Định Hóa", lat: 21.8909, lng: 105.6262, description: "Thủ đô kháng chiến trong cuộc kháng chiến chống Pháp." },
+        { name: "Thác Nặm Rứt (Thác 7 tầng)", lat: 21.8025, lng: 105.6792, description: "Thác nước tự nhiên hùng vĩ, còn giữ vẻ hoang sơ." },
+        { name: "Chùa Hang (Kim Sơn Tự)", lat: 21.6195, lng: 105.8277, description: "Ngôi chùa nằm trong hang động với kiến trúc độc đáo." },
+        { name: "Không gian văn hoá trà Tân Cương", lat: 21.5430, lng: 105.7720, description: "Vùng chè đặc sản nổi tiếng của Việt Nam." },
+        { name: "Hồ Suối Lạnh", lat: 21.4649, lng: 105.9189, description: "Hồ nước yên bình với cảnh sắc sơn thủy hữu tình." },
+        { name: "Thác Mưa Rơi", lat: 21.8651, lng: 105.6133, description: "Thác nước đẹp như một dải lụa trắng giữa núi rừng." },
+        { name: "Bảo tàng quân khu 1", lat: 21.5901, lng: 105.8365, description: "Nơi trưng bày các hiện vật lịch sử quân sự." },
+        { name: "Huyện Phú Bình", lat: 21.4386, lng: 105.9533, description: "Nổi tiếng với các làng nghề truyền thống đặc sắc." }
+    ];
+
+    const map = L.map('map', {
+        zoomControl: false
+    }).setView([21.65, 105.80], 10);
+    
+    L.control.zoom({ position: 'topleft' }).addTo(map);
+
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 19,
+        attribution: '© <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+    }).addTo(map);
+
+    let markers = [];
+    const menuItemsContainer = document.getElementById('menu-items');
+
+    locations.forEach(location => {
+        const marker = L.marker([location.lat, location.lng]).addTo(map);
+        const popupContent = `
+            <div class="popup-content">
+                <h3>${location.name}</h3>
+                <p>${location.description}</p>
+                <button class="directions-button" onclick="openDirections(${location.lat}, ${location.lng})">
+                    <i class="fas fa-directions"></i> Chỉ đường
+                </button>
+            </div>`;
+        marker.bindPopup(popupContent);
+        markers.push({ name: location.name, marker: marker, lat: location.lat, lng: location.lng });
+
+        const menuItem = document.createElement('div');
+        menuItem.className = 'menu-item';
+        menuItem.innerHTML = `
+            <div class="menu-item-icon"><i class="fas fa-map-marker-alt"></i></div>
+            <div class="menu-item-content">
+                <div class="item-name">${location.name}</div>
+                <div class="item-desc">${location.description}</div>
+            </div>`;
+        menuItem.addEventListener('click', () => {
+            focusOnLocation(location.name);
+            toggleMenu(); // Đóng menu panel sau khi chọn địa điểm
+        });
+        menuItemsContainer.appendChild(menuItem);
+    });
+
+    const menuPanel = document.getElementById('menu-panel');
+    function toggleMenu() {
+        menuPanel.classList.toggle('open');
+    }
+
+    L.Control.Menu = L.Control.extend({
+        onAdd: function(map) {
+            const container = L.DomUtil.create('div', 'leaflet-bar leaflet-control leaflet-control-menu');
+            container.innerHTML = '<a href="#" title="Danh sách địa điểm"><i class="fas fa-bars"></i></a>';
+            L.DomEvent.disableClickPropagation(container);
+            L.DomEvent.on(container, 'click', e => { e.preventDefault(); toggleMenu(); });
+            return container;
+        },
+    });
+
+    new L.Control.Menu({ position: 'topleft' }).addTo(map);
+    document.getElementById('close-menu-btn').addEventListener('click', toggleMenu);
+
+    // SỬA LỖI: Cập nhật hàm chỉ đường với URL chính xác
+    window.openDirections = function(lat, lng) {
+        // URL này sẽ mở Google Maps và đặt địa điểm làm đích đến
+        const url = `https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}`;
+        window.open(url, '_blank');
+    }
+
+    const searchInput = document.getElementById('search-input');
+    const suggestionsContainer = document.getElementById('suggestions-container');
+
+    searchInput.addEventListener('input', () => {
+        const query = searchInput.value.toLowerCase().trim();
+        suggestionsContainer.innerHTML = '';
+        if (!query) {
+            suggestionsContainer.style.display = 'none';
+            return;
+        }
+        const filteredLocations = locations.filter(loc => loc.name.toLowerCase().includes(query));
+        suggestionsContainer.style.display = filteredLocations.length > 0 ? 'block' : 'none';
+        filteredLocations.forEach(loc => {
+            const item = document.createElement('div');
+            item.className = 'suggestion-item';
+            item.textContent = loc.name;
+            item.onclick = () => {
+                searchInput.value = loc.name;
+                suggestionsContainer.style.display = 'none';
+                focusOnLocation(loc.name);
+            };
+            suggestionsContainer.appendChild(item);
+        });
+    });
+
+    function focusOnLocation(name) {
+        const target = markers.find(m => m.name === name);
+        if(target) {
+            map.setView([target.lat, target.lng], 15);
+            target.marker.openPopup();
+        }
+    }
+
+    document.addEventListener('click', function(event) {
+        const controls = document.getElementById('controls');
+        if (!controls.contains(event.target)) {
+            suggestionsContainer.style.display = 'none';
+        }
+        
+        const menuButton = document.querySelector('.leaflet-control-menu');
+        if(menuPanel.classList.contains('open') && !menuPanel.contains(event.target) && !menuButton.contains(event.target)) {
+            toggleMenu();
+        }
+    });
+
+    // JavaScript cho hamburger menu (trên mobile)
+    const hamburgerMenu = document.querySelector('.hamburger-menu');
+    const mobileMenu = document.querySelector('.mobile-menu');
+    const closeMobileMenu = document.querySelector('.close-mobile-menu');
+    const navLinksMobile = document.querySelectorAll('.mobile-menu .nav-link');
+
+    hamburgerMenu.addEventListener('click', () => {
+        mobileMenu.classList.add('open');
+    });
+
+    closeMobileMenu.addEventListener('click', () => {
+        mobileMenu.classList.remove('open');
+    });
+
+    // Đóng mobile menu khi click vào một link
+    navLinksMobile.forEach(link => {
+        link.addEventListener('click', () => {
+            mobileMenu.classList.remove('open');
+        });
+    });
+
+    // Đóng mobile menu khi click ra ngoài
+    document.addEventListener('click', function(event) {
+        if (mobileMenu.classList.contains('open') && !mobileMenu.contains(event.target) && !hamburgerMenu.contains(event.target)) {
+            mobileMenu.classList.remove('open');
+        }
+    });
+});
+(function(){if(!window.chatbase||window.chatbase("getState")!=="initialized"){window.chatbase=(...arguments)=>{if(!window.chatbase.q){window.chatbase.q=[]}window.chatbase.q.push(arguments)};window.chatbase=new Proxy(window.chatbase,{get(target,prop){if(prop==="q"){return target.q}return(...args)=>target(prop,...args)}})}const onLoad=function(){const script=document.createElement("script");script.src="https://www.chatbase.co/embed.min.js";script.id="Y36JqxzS7N6nBgADgNxNM";script.domain="www.chatbase.co";document.body.appendChild(script)};if(document.readyState==="complete"){onLoad()}else{window.addEventListener("load",onLoad)}})();
+</script>
+</body>
+</html>

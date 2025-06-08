@@ -1,0 +1,674 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Game Đố Vui Thái Nguyên</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        /* --- Biến màu và cài đặt gốc --- */
+        :root {
+            --primary-color: #00796b;
+            --secondary-color: #005a4d;
+            --text-dark: #212529;
+            --text-light: #f8f9fa;
+            --background-light: #f4f7f6;
+            --white-color: #ffffff;
+            --shadow-color: rgba(0, 0, 0, 0.07);
+            --correct-bg: #a5d6a7;
+            --correct-border: #388e3c;
+            --correct-text: #1b5e20;
+            --wrong-bg: #ef9a9a;
+            --wrong-border: #d32f2f;
+            --wrong-text: #b71c1c;
+        }
+
+        /* --- Reset và cài đặt chung --- */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Montserrat', sans-serif;
+            line-height: 1.7;
+            background-color: var(--background-light);
+            color: var(--text-dark);
+            opacity: 0;
+            transition: opacity 0.5s ease-in-out;
+            
+            /* --- PHẦN SỬA LỖI BỐ CỤC CHO BODY --- */
+            display: flex;
+            flex-direction: column; /* Xếp các mục con (nav, quiz-box) theo chiều dọc */
+            align-items: center;    /* Căn giữa các mục con theo chiều ngang */
+            min-height: 100vh;
+            overflow-x: hidden; /* Ngăn chặn scroll ngang */
+            padding: 0; /* Đảm bảo không có padding body */
+        }
+
+        body.fade-in {
+            opacity: 1;
+        }
+        
+        /* --- Thanh điều hướng (Navbar) --- */
+        nav {
+            background-color: rgba(255, 255, 255, 0.97);
+            backdrop-filter: blur(10px);
+            padding: 10px 0;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 10px var(--shadow-color);
+            width: 100%;
+            margin-bottom: 20px; /* Thêm khoảng cách với nội dung game */
+        }
+        
+        nav .nav-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 90%;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .nav-logo a {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+            color: var(--secondary-color);
+            font-size: 1.5em;
+            font-weight: 700;
+        }
+        
+        .nav-logo img {
+            width: 35px;
+            height: 35px;
+        }
+        
+        nav ul {
+            list-style: none;
+            display: flex; /* Mặc định hiển thị trên desktop */
+            margin: 0;
+            padding: 0;
+        }
+        
+        /* Đã bỏ animation cho từng li ở đây vì nó sẽ được quản lý qua JS khi toggle menu */
+        
+        
+        @keyframes fadeInDown {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        nav a {
+            display: block;
+            text-decoration: none;
+            color: var(--text-dark);
+            font-weight: 500;
+            font-size: 1em;
+            padding: 15px;
+            transition: color 0.3s ease;
+            white-space: nowrap; /* Đảm bảo chữ không bị xuống dòng */
+        }
+        
+        nav a.active {
+            color: var(--primary-color);
+            font-weight: 700;
+        }
+        
+        nav a:not(.active):hover {
+            color: var(--primary-color);
+        }
+
+        /* Hamburger menu icon */
+        .menu-toggle {
+            display: none; /* Ẩn theo mặc định trên desktop */
+            font-size: 1.8em;
+            cursor: pointer;
+            color: var(--primary-color);
+        }
+
+        /* --- Màn hình tải game --- */
+        #loading {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--white-color);
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            gap: 15px;
+            font-size: 1.2em;
+            color: var(--primary-color);
+        }
+
+        #loading img {
+            width: 100px;
+            height: 100px;
+        }
+
+        /* --- Khung Game --- */
+        .quiz-container {
+            display: none; /* Sẽ được hiển thị bằng JS */
+            flex-direction: column;
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+            max-width: 700px;
+            width: 95%;
+            background: var(--white-color);
+            text-align: center;
+            position: relative;
+            margin-bottom: 50px; /* Thêm khoảng cách dưới cùng */
+        }
+        
+        h1 {
+            color: var(--primary-color);
+            margin-bottom: 10px;
+            font-size: 28px;
+        }
+
+        .icon {
+            font-size: 36px;
+            margin-bottom: 10px;
+        }
+
+        #question {
+            font-size: 22px;
+            color: var(--text-dark);
+            margin-bottom: 20px;
+            min-height: 60px;
+            user-select: none;
+        }
+
+        #answers {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .answer {
+            background: #f1f1f1;
+            padding: 15px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.2s ease-in-out;
+            border: 2px solid transparent;
+            user-select: none;
+            font-size: 18px;
+            text-align: left;
+        }
+
+        .answer:hover {
+            background: #e0f7fa;
+            border-color: #26c6da;
+        }
+
+        .answer.correct {
+            background-color: var(--correct-bg);
+            border-color: var(--correct-border);
+            color: var(--correct-text);
+            font-weight: bold;
+        }
+
+        .answer.wrong {
+            background-color: var(--wrong-bg);
+            border-color: var(--wrong-border);
+            color: var(--wrong-text);
+            font-weight: bold;
+        }
+        
+        .answer.disabled {
+            pointer-events: none;
+            opacity: 0.7;
+        }
+
+        .btn-group {
+            margin-top: 20px;
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        button {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            user-select: none;
+        }
+
+        button:hover {
+            background-color: var(--secondary-color);
+        }
+        
+        button:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+
+        #score {
+            margin-top: 20px;
+            font-weight: bold;
+            font-size: 18px;
+            color: var(--primary-color);
+        }
+
+        #hint, #explanation {
+            margin-top: 15px;
+            color: #555;
+            min-height: 24px;
+            font-size: 16px;
+            font-style: italic;
+            line-height: 1.5;
+        }
+        
+        #final-result {
+            display: none;
+            /* Cần thêm flex-direction: column để các mục con được căn giữa */
+            flex-direction: column; 
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* --- Responsive cho thiết bị di động --- */
+        /* Mặc định cho màn hình lớn hơn */
+        @media (min-width: 992px) {
+            nav ul {
+                display: flex; /* Đảm bảo menu hiển thị ngang trên desktop */
+            }
+            .menu-toggle {
+                display: none; /* Ẩn hamburger trên desktop */
+            }
+        }
+
+        /* Giao diện máy tính bảng và điện thoại (max-width: 991px) */
+        @media (max-width: 991px) {
+            nav .nav-container {
+                flex-direction: row; /* Giữ logo và toggle trên 1 hàng */
+                justify-content: space-between; /* Đẩy logo sang trái, toggle sang phải */
+                align-items: center;
+            }
+
+            nav ul {
+                display: none; /* Ẩn menu mặc định trên mobile */
+                flex-direction: column; /* Sắp xếp các mục theo chiều dọc */
+                width: 100%;
+                text-align: center;
+                position: absolute; /* Đặt menu overlay */
+                top: 60px; /* Vị trí dưới thanh nav (chiều cao nav khoảng 60px) */
+                left: 0;
+                background-color: rgba(255, 255, 255, 0.97);
+                box-shadow: 0 8px 16px var(--shadow-color);
+                border-top: 1px solid #eee;
+                padding: 10px 0;
+                /* Bỏ animation ở đây để JS quản lý tốt hơn */
+            }
+
+            nav ul.active {
+                display: flex; /* Hiển thị menu khi có class 'active' */
+            }
+
+            /* Đảm bảo các mục li hiển thị bình thường khi menu active */
+            nav ul.active li {
+                opacity: 1; 
+                transform: translateY(0); 
+            }
+
+            nav a {
+                padding: 12px 15px; /* Điều chỉnh padding cho menu mobile */
+                border-bottom: 1px solid #f0f0f0; /* Thêm đường kẻ phân cách */
+            }
+
+            nav ul li:last-child a {
+                border-bottom: none; /* Xóa đường kẻ ở mục cuối cùng */
+            }
+
+            .menu-toggle {
+                display: block; /* Hiển thị icon hamburger */
+            }
+        }
+
+        /* Giao diện điện thoại nhỏ hơn (max-width: 480px) */
+        @media (max-width: 480px) {
+            .quiz-container { padding: 20px; }
+            h1 { font-size: 24px; }
+            #question { font-size: 18px; }
+            .answer { font-size: 16px; padding: 12px; }
+            button { font-size: 14px; padding: 10px 15px; }
+            #score { font-size: 16px; }
+            #hint, #explanation { font-size: 14px; }
+        }
+
+        /* Animation khi chưa trả lời mà nhấn Next */
+        @keyframes shake {
+            0% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            50% { transform: translateX(5px); }
+            75% { transform: translateX(-5px); }
+            100% { transform: translateX(0); }
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <div class="nav-container">
+            <div class="nav-logo">
+                <a href="index.html">
+                    <img src="images/logo.png" alt="Logo Thái Nguyên" class="logo-img">
+                        <path d="M50 95C50 95 95 80 95 50C95 20 50 5 50 5C50 5 5 20 5 50C5 80 50 95 50 95Z" stroke="currentColor" stroke-width="8"/>
+                        <path d="M50 5V55C50 55 65 50 75 40" stroke="currentColor" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                    <span>Thái Nguyên</span>
+                </a>
+            </div>
+            <div class="menu-toggle" id="menu-toggle">
+                <i class="fas fa-bars"></i>
+            </div>
+            <ul id="main-nav">
+                <li><a href="index.html" class="nav-link">Trang Chủ</a></li>
+                <li><a href="chatbot.html" class="nav-link">ChatBot</a></li>
+                <li><a href="thuthach.html" class="nav-link">Thử Thách Pha Trà</a></li>
+                <li><a href="bando.html" class="nav-link">Bản Đồ</a></li>
+                <li><a href="dovui.html" class="nav-link active">Đố Vui</a></li>
+                <li><a href="baibao.html" class="nav-link">Bài Báo</a></li>
+                <li><a href="lienhe.html" class="nav-link">Liên Hệ Hỗ Trợ</a></li>
+            </ul>
+        </div>
+    </nav>
+    
+    <div id="loading">
+        <div>Đang tải game...</div>
+        <img src="https://i.gifer.com/YCZH.gif" alt="Đang tải..." />
+    </div>
+
+    <div class="quiz-container" id="quiz">
+        <div id="game-view">
+            <div class="icon">🧭</div>
+            <h1>Đố Vui Thái Nguyên</h1>
+
+            <div id="question">Câu hỏi đang tải...</div>
+            <div id="answers"></div>
+            <div id="hint"></div>
+            <div id="explanation"></div>
+
+            <div class="btn-group">
+                <button id="hint-btn" onclick="showHint()">❓ Trợ giúp</button>
+                <button id="next-btn" onclick="nextQuestion()">➡️ Câu tiếp theo</button>
+            </div>
+
+            <div id="score"></div>
+        </div>
+        
+        <div id="final-result">
+            <div class="icon">🏆</div>
+            <h1>Hoàn thành!</h1>
+            <p id="final-score" style="font-size: 20px; margin: 15px 0;"></p>
+            <p id="final-message" style="margin-bottom: 25px;"></p>
+            <button id="restart-btn" onclick="restartQuiz()">🔄 Chơi lại</button>
+        </div>
+    </div>
+
+<script>
+    const questions = [
+        {
+            question: "🌄 Thác nước nào được xem là một trong những thác đẹp nhất Thái Nguyên, nằm ở huyện Đại Từ?",
+            answers: ["Thác Mơ", "Thác Cửa Tử", "Thác Dải Yếm", "Thác Bản Giốc"],
+            correct: 1,
+            hint: "Tên của thác có ý nghĩa như một cánh cửa dẫn vào cõi hư vô, một điểm đến trekking hấp dẫn.",
+            explanation: "Thác Cửa Tử (xã Hoàng Nông, huyện Đại Từ) là một hệ thống gồm 7 con thác đẹp và hoang sơ, là điểm du lịch sinh thái nổi tiếng của Thái Nguyên."
+        },
+        {
+            question: "🏯 Đền Đuổm ở huyện Phú Lương là nơi thờ vị danh nhân lịch sử nào?",
+            answers: ["Dương Tự Minh", "Trần Hưng Đạo", "Chu Văn An", "Lý Thường Kiệt"],
+            correct: 0,
+            hint: "Ông là một thủ lĩnh tài ba người Tày, phò mã của nhà Lý, có công lớn bảo vệ biên cương phía Bắc.",
+            explanation: "Đền Đuổm (xã Động Đạt, huyện Phú Lương) thờ danh tướng Dương Tự Minh, một nhân vật lịch sử quan trọng gắn liền với vùng đất Thái Nguyên xưa."
+        },
+        {
+            question: "☕ Thái Nguyên được mệnh danh là 'Đệ nhất danh trà' của Việt Nam với sản phẩm nổi tiếng nào?",
+            answers: ["Cà phê", "Chè xanh Tân Cương", "Trà Oolong", "Trà Shan tuyết"],
+            correct: 1,
+            hint: "Sản phẩm này đến từ một xã thuộc thành phố Thái Nguyên, nổi tiếng với vị 'tiền chát hậu ngọt'.",
+            explanation: "Chè xanh Tân Cương của Thái Nguyên là thương hiệu chè nổi tiếng bậc nhất Việt Nam, được bảo hộ chỉ dẫn địa lý và là một đặc sản trứ danh."
+        },
+        {
+            question: "🏞️ Khu du lịch sinh thái nào là biểu tượng của du lịch Thái Nguyên?",
+            answers: ["Khu du lịch Hồ Núi Cốc", "Khu du lịch Suối Tiên", "Vườn quốc gia Tam Đảo", "Vườn quốc gia Ba Vì"],
+            correct: 0,
+            hint: "Gắn liền với huyền thoại về chàng Cốc và nàng Công, đây là một hồ nước nhân tạo rộng lớn.",
+            explanation: "Hồ Núi Cốc là khu du lịch trọng điểm của tỉnh Thái Nguyên, nổi tiếng với cảnh quan sơn thủy hữu tình và nhiều hoạt động vui chơi giải trí."
+        },
+        {
+            question: "🗓️ Cuộc khởi nghĩa Thái Nguyên lừng lẫy chống thực dân Pháp do Đội Cấn lãnh đạo diễn ra vào năm nào?",
+            answers: ["1930", "1945", "1917", "1884"],
+            correct: 2,
+            hint: "Sự kiện diễn ra trong Thế chiến thứ nhất, kéo dài 5 tháng và gây tiếng vang lớn.",
+            explanation: "Khởi nghĩa Thái Nguyên do Trịnh Văn Cấn (Đội Cấn) và Lương Ngọc Quyến lãnh đạo nổ ra vào đêm 30 rạng ngày 31 tháng 8 năm 1917."
+        },
+        {
+            question: "🏰 Đâu là trung tâm hành chính, kinh tế, văn hóa của tỉnh Thái Nguyên?",
+            answers: ["Thành phố Sông Công", "Thị xã Phổ Yên", "Thành phố Thái Nguyên", "Huyện Định Hóa"],
+            correct: 2,
+            hint: "Tên của thành phố này trùng với tên của cả tỉnh.",
+            explanation: "Thành phố Thái Nguyên là đô thị loại I, là trung tâm chính trị và kinh tế quan trọng của tỉnh Thái Nguyên và cả vùng trung du miền núi phía Bắc."
+        },
+        {
+            question: "⛩️ Ngôi chùa cổ nào ở Thái Nguyên nổi tiếng vì có điện thờ chính nằm trong một hang đá tự nhiên?",
+            answers: ["Chùa Bái Đính", "Chùa Hang", "Chùa Hương", "Chùa Ba Vàng"],
+            correct: 1,
+            hint: "Ngôi chùa này còn có tên chữ là Kim Sơn Tự, nằm ở huyện Đồng Hỷ.",
+            explanation: "Chùa Hang (Kim Sơn Tự) ở huyện Đồng Hỷ là một ngôi chùa độc đáo và linh thiêng, thu hút rất đông du khách và Phật tử thập phương."
+        },
+        {
+            question: "🌳 Khu bảo tồn thiên nhiên nào ở Thái Nguyên nổi tiếng với hệ sinh thái núi đá vôi và các di chỉ khảo cổ?",
+            answers: ["Khu bảo tồn Pù Luông", "Vườn quốc gia Cúc Phương", "Khu bảo tồn Thần Sa - Phượng Hoàng", "Vườn quốc gia Ba Bể"],
+            correct: 2,
+            hint: "Khu bảo tồn này nằm ở huyện Võ Nhai, nơi phát hiện ra di chỉ của người tiền sử.",
+            explanation: "Khu bảo tồn thiên nhiên Thần Sa - Phượng Hoàng (huyện Võ Nhai) có giá trị cao về đa dạng sinh học và là nơi có các di chỉ khảo cổ quan trọng như mái đá Ngườm."
+        },
+        {
+            question: "🏞️ Hồ nước nào ở huyện Đại Từ được biết đến là điểm du lịch sinh thái mới nổi với cảnh quan trong lành, thơ mộng?",
+            answers: ["Hồ Suối Lạnh", "Hồ Ba Bể", "Hồ Đại Lải", "Hồ Tuyền Lâm"],
+            correct: 0,
+            hint: "Tên hồ gợi lên cảm giác mát mẻ, dễ chịu.",
+            explanation: "Hồ Suối Lạnh (xã Thành Công, huyện Đại Từ) đang trở thành điểm đến dã ngoại, cắm trại hấp dẫn du khách nhờ không gian yên tĩnh và cảnh đẹp hoang sơ."
+        },
+        {
+            question: "🎉 Lễ hội truyền thống lớn nhất tỉnh Thái Nguyên được tổ chức vào tháng Giêng âm lịch hàng năm là lễ hội nào?",
+            answers: ["Lễ hội Lim", "Lễ hội Đền Hùng", "Lễ hội chùa Hương", "Lễ hội Đền Đuổm"],
+            correct: 3,
+            hint: "Đây là lễ hội để tưởng nhớ công lao của phò mã Dương Tự Minh.",
+            explanation: "Lễ hội Đền Đuổm là lễ hội lớn nhất của Thái Nguyên, được tổ chức từ ngày mùng 4 đến mùng 6 tháng Giêng âm lịch để tri ân danh tướng Dương Tự Minh."
+        }
+    ];
+
+    let currentQuestionIndex = 0;
+    let score = 0;
+    let answered = false;
+
+    // Lấy các element từ DOM
+    const loadingEl = document.getElementById('loading');
+    const quizEl = document.getElementById('quiz');
+    const gameViewEl = document.getElementById('game-view');
+    const finalResultEl = document.getElementById('final-result');
+    const questionEl = document.getElementById('question');
+    const answersEl = document.getElementById('answers');
+    const hintEl = document.getElementById('hint');
+    const explanationEl = document.getElementById('explanation');
+    const scoreEl = document.getElementById('score');
+    const nextBtn = document.getElementById('next-btn');
+    const hintBtn = document.getElementById('hint-btn');
+    const menuToggle = document.getElementById('menu-toggle');
+    const mainNav = document.getElementById('main-nav');
+    
+    // Hàm hiển thị câu hỏi
+    function showQuestion() {
+        answered = false;
+        resetState();
+        
+        const q = questions[currentQuestionIndex];
+        questionEl.textContent = q.question;
+        
+        q.answers.forEach((answer, index) => {
+            const btn = document.createElement('div');
+            btn.className = 'answer';
+            btn.textContent = answer;
+            btn.onclick = () => selectAnswer(btn, index);
+            answersEl.appendChild(btn);
+        });
+        
+        scoreEl.textContent = `Điểm: ${score} / ${questions.length}`;
+        nextBtn.textContent = (currentQuestionIndex === questions.length - 1) ? '🏁 Hoàn thành' : '➡️ Câu tiếp theo';
+        // Vô hiệu hóa nút next khi mới vào câu hỏi mới
+        nextBtn.disabled = true; 
+    }
+
+    // Hàm reset trạng thái của các element
+    function resetState() {
+        hintEl.style.display = 'none';
+        explanationEl.style.display = 'none';
+        hintEl.textContent = '';
+        explanationEl.textContent = '';
+        answersEl.innerHTML = '';
+        nextBtn.disabled = true;
+        hintBtn.disabled = false;
+    }
+
+    // Hàm xử lý khi chọn câu trả lời
+    function selectAnswer(selectedBtn, index) {
+        if (answered) return;
+        answered = true;
+        nextBtn.disabled = false;
+        hintBtn.disabled = true;
+
+        const q = questions[currentQuestionIndex];
+        const answerButtons = Array.from(answersEl.children);
+
+        if (index === q.correct) {
+            score++;
+            selectedBtn.classList.add('correct');
+        } else {
+            selectedBtn.classList.add('wrong');
+        }
+
+        // Hiển thị đáp án đúng (luôn hiển thị, kể cả khi chọn sai)
+        answerButtons.forEach((btn, i) => {
+            if (i === q.correct) {
+                btn.classList.add('correct');
+            }
+            btn.classList.add('disabled'); // Vô hiệu hóa tất cả các nút
+        });
+        
+        explanationEl.textContent = "🔎 Giải thích: " + q.explanation;
+        explanationEl.style.display = 'block';
+        scoreEl.textContent = `Điểm: ${score} / ${questions.length}`;
+    }
+    
+    // Hàm hiển thị gợi ý
+    function showHint() {
+        if (answered) return; // Không hiển thị gợi ý nếu đã trả lời
+        const q = questions[currentQuestionIndex];
+        hintEl.textContent = "💡 Gợi ý: " + q.hint;
+        hintEl.style.display = 'block';
+        hintBtn.disabled = true;
+    }
+
+    // Hàm chuyển câu hỏi tiếp theo
+    function nextQuestion() {
+        if (!answered) {
+            answersEl.style.animation = 'shake 0.5s';
+            setTimeout(() => { answersEl.style.animation = '' }, 500);
+            return;
+        }
+        currentQuestionIndex++;
+        if (currentQuestionIndex < questions.length) {
+            showQuestion();
+        } else {
+            showFinalScore();
+        }
+    }
+    
+    // CẢI TIẾN: Hàm hiển thị điểm cuối cùng
+    function showFinalScore() {
+        gameViewEl.style.display = 'none';
+        finalResultEl.style.display = 'flex'; // Sử dụng flex để căn giữa
+        
+        document.getElementById('final-score').textContent = `Điểm của bạn: ${score} / ${questions.length}`;
+        
+        let message = "Tuyệt vời! Bạn là một chuyên gia về Thái Nguyên!";
+        if (score / questions.length < 0.5) {
+            message = "Cố gắng hơn nhé, còn nhiều điều thú vị về Thái Nguyên đang chờ bạn khám phá!";
+        } else if (score / questions.length < 0.8) {
+            message = "Khá lắm! Bạn đã có kiến thức rất tốt về Thái Nguyên!";
+        }
+        document.getElementById('final-message').textContent = message;
+    }
+    
+    // CẢI TIẾN: Hàm chơi lại
+    function restartQuiz() {
+        score = 0;
+        currentQuestionIndex = 0;
+        finalResultEl.style.display = 'none';
+        gameViewEl.style.display = 'block'; // Hiển thị lại game-view
+        showQuestion();
+    }
+
+    // Hiển thị game sau khi tải xong
+    window.onload = () => {
+        document.body.classList.add('fade-in'); // Kích hoạt hiệu ứng fade-in
+        setTimeout(() => {
+            loadingEl.style.display = 'none';
+            quizEl.style.display = 'flex'; // Sử dụng flex để căn giữa tốt hơn
+            showQuestion();
+        }, 1500); // Giảm thời gian chờ
+
+        // Thêm Event Listener cho hamburger menu
+        menuToggle.addEventListener('click', () => {
+            mainNav.classList.toggle('active');
+            // Cải thiện: Bật/tắt animation cho từng li khi menu-toggle được nhấn
+            Array.from(mainNav.children).forEach((li, index) => {
+                if (mainNav.classList.contains('active')) {
+                    li.style.animation = `fadeInDown 0.5s ease forwards ${index * 0.1}s`;
+                } else {
+                    li.style.animation = ''; // Xóa animation khi đóng
+                }
+            });
+        });
+
+        // Đóng menu khi click ra ngoài hoặc resize màn hình lớn hơn
+        window.addEventListener('resize', () => {
+            if (window.innerWidth >= 992 && mainNav.classList.contains('active')) {
+                mainNav.classList.remove('active');
+                 Array.from(mainNav.children).forEach(li => li.style.animation = '');
+            }
+        });
+    };
+    (function(){if(!window.chatbase||window.chatbase("getState")!=="initialized"){window.chatbase=(...arguments)=>{if(!window.chatbase.q){window.chatbase.q=[]}window.chatbase.q.push(arguments)};window.chatbase=new Proxy(window.chatbase,{get(target,prop){if(prop==="q"){return target.q}return(...args)=>target(prop,...args)}})}const onLoad=function(){const script=document.createElement("script");script.src="https://www.chatbase.co/embed.min.js";script.id="Y36JqxzS7N6nBgADgNxNM";script.domain="www.chatbase.co";document.body.appendChild(script)};if(document.readyState==="complete"){onLoad()}else{window.addEventListener("load",onLoad)}})();
+
+</script>
+
+</body>
+</html>

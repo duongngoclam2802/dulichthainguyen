@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+ <html lang="vi">
+ <head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Khám phá Du lịch Thái Nguyên</title>
+  <style>
+  /* ----- Google Fonts Import ----- */
+  @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;700;900&display=swap');
+
+  /* ----- CSS Variables ----- */
+  :root {
+  --primary-color: #00796b;
+  --secondary-color: #005a4d;
+  --accent-color: #3498db;
+  --accent-hover-color: #217dbb;
+  --text-dark: #2c3e50;
+  --text-light: #555;
+  --white-color: #ffffff;
+  --background-light: #f5f7fa;
+  --shadow-color: rgba(0, 0, 0, 0.08);
+  --border-color: #eeeeee;
+  }
+
+  /* ----- General Reset & Base Styles ----- */
+  * {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  }
+
+  html {
+  scroll-behavior: smooth;
+  }
+
+  body {
+  font-family: 'Montserrat', sans-serif;
+  line-height: 1.7;
+  background-color: var(--background-light);
+  color: var(--text-dark);
+  opacity: 0;
+  transition: opacity 0.5s ease-in-out;
+  }
+
+  body.fade-in {
+  opacity: 1;
+  }
+
+  /* ----- Navigation Bar ----- */
+  nav {
+  background-color: rgba(255, 255, 255, 0.97);
+  backdrop-filter: blur(10px);
+  padding: 10px 0;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  box-shadow: 0 2px 10px var(--shadow-color);
+  }
+
+  .nav-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 90%;
+  max-width: 1200px;
+  margin: 0 auto;
+  }
+
+  .nav-logo a {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  text-decoration: none;
+  color: var(--secondary-color);
+  font-size: 1.5em;
+  font-weight: 700;
+  }
+
+  .nav-logo img {
+  width: 35px;
+  height: 35px;
+  }
+
+  nav ul {
+  list-style: none;
+  display: flex;
+  }
+
+  nav ul li {
+  opacity: 0;
+  transform: translateY(-10px);
+  animation: fadeInDown 0.5s ease forwards;
+  }
+
+  /* Animation delay for each nav item */
+  nav ul li:nth-child(1) { animation-delay: 0.1s; }
+  nav ul li:nth-child(2) { animation-delay: 0.2s; }
+  nav ul li:nth-child(3) { animation-delay: 0.3s; }
+  nav ul li:nth-child(4) { animation-delay: 0.4s; }
+  nav ul li:nth-child(5) { animation-delay: 0.5s; }
+  nav ul li:nth-child(6) { animation-delay: 0.6s; }
+  nav ul li:nth-child(7) { animation-delay: 0.7s; }
+
+  @keyframes fadeInDown {
+  to {
+  opacity: 1;
+  transform: translateY(0);
+  }
+  }
+
+  nav a {
+  display: block;
+  text-decoration: none;
+  color: var(--text-dark);
+  font-weight: 500;
+  font-size: 1em;
+  padding: 15px;
+  transition: color 0.3s ease;
+  }
+
+  nav a.active {
+  color: var(--primary-color);
+  font-weight: 700;
+  }
+
+  nav a:not(.active):hover {
+  color: var(--primary-color);
+  }
+
+  /* Hamburger Menu Styles */
+  .hamburger {
+  display: none;
+  cursor: pointer;
+  }
+
+  .bar {
+  display: block;
+  width: 25px;
+  height: 3px;
+  margin: 5px auto;
+  -webkit-transition: all 0.3s ease-in-out;
+  transition: all 0.3s ease-in-out;
+  background-color: var(--text-dark);
+  }
+
+  /* ----- Header ----- */
+  header {
+  text-align: center;
+  padding: 40px 20px 20px;
+  background-color: var(--white-color);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  margin-bottom: 30px;
+  }
+
+  header h1 {
+  margin: 0;
+  font-size: 32px;
+  color: var(--text-dark);
+  }
+
+  /* ----- Main Content Grid ----- */
+  .container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px 40px;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 24px;
+  }
+
+  /* ----- Card Styling ----- */
+  .card {
+  background: var(--white-color);
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 12px var(--shadow-color);
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+
+  .card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+  }
+
+  .card img,
+  .card iframe {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+  border-bottom: 1px solid var(--border-color);
+  }
+
+  .card-content {
+  padding: 16px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  }
+
+  .card-content h2 {
+  font-size: 18px;
+  margin: 0 0 10px;
+  color: var(--text-dark);
+  }
+
+  .card-content p {
+  flex-grow: 1;
+  font-size: 15px;
+  color: var(--text-light);
+  margin: 0 0 12px;
+  }
+
+  .card-content a {
+  text-decoration: none;
+  background-color: var(--accent-color);
+  color: var(--white-color);
+  padding: 10px;
+  border-radius: 6px;
+  text-align: center;
+  font-weight: 500;
+  transition: background-color 0.3s;
+  }
+
+  .card-content a:hover {
+  background-color: var(--accent-hover-color);
+  }
+
+  /* ----- Responsive Design ----- */
+  @media (max-width: 768px) {
+  header h1 {
+  font-size: 24px;
+  }
+  .card-content h2 {
+  font-size: 16px;
+  }
+  nav ul {
+  display: none;
+  }
+  .hamburger {
+  display: block;
+  }
+  }
+
+  /* Responsive Menu */
+  @media (max-width: 768px) {
+  .nav-container {
+  display: flex;
+  align-items: center;
+  }
+
+  nav ul {
+  position: absolute;
+  top: 60px; /* Adjust as needed */
+  left: 0;
+  background-color: rgba(255, 255, 255, 0.97);
+  backdrop-filter: blur(10px);
+  width: 100%;
+  text-align: center;
+  display: none; /* Initially hidden */
+  flex-direction: column;
+  }
+
+  nav ul.active {
+  display: flex; /* Show when active */
+  }
+
+  nav ul li {
+  width: 100%; /* Full width for each item */
+  }
+
+  nav a {
+  padding: 15px;
+  }
+
+  .hamburger {
+  display: block;
+  cursor: pointer;
+  }
+  }
+  </style>
+ </head>
+
+ <body>
+  <nav>
+  <div class="nav-container">
+  <div class="nav-logo">
+  <a href="index.html">
+  <img src="images/logo.png" alt="Logo Thái Nguyên" class="logo-img">
+  <path d="M50 95C50 95 95 80 95 50C95 20 50 5 50 5C50 5 5 20 5 50C5 80 50 95 50 95Z" stroke="currentColor" stroke-width="8" />
+  <path d="M50 5V55C50 55 65 50 75 40" stroke="currentColor" stroke-width="8" stroke-linecap="round" stroke-linejoin="round" />
+  </svg>
+  <span>Thái Nguyên</span>
+  </a>
+  </div>
+  <ul class="nav-links">
+  <li><a href="index.html" class="nav-link">Trang Chủ</a></li>
+  <li><a href="chatbot.html" class="nav-link">ChatBot</a></li>
+  <li><a href="thuthach.html" class="nav-link">Thử Thách Pha Trà</a></li>
+  <li><a href="bando.html" class="nav-link">Bản Đồ</a></li>
+  <li><a href="dovui.html" class="nav-link">Đố Vui</a></li>
+  <li><a href="baibao.html" class="active nav-link">Bài Báo</a></li>
+  <li><a href="lienhe.html" class="nav-link">Liên Hệ Hỗ Trợ</a></li>
+  </ul>
+  <div class="hamburger">
+  <span class="bar"></span>
+  <span class="bar"></span>
+  <span class="bar"></span>
+  </div>
+  </div>
+  </nav>
+
+  <header>
+  <h1>Khám phá Du lịch Thái Nguyên</h1>
+  </header>
+
+  <div class="container">
+  <div class="card">
+  <img src="https://baothainguyen.vn/file/e7837c027f6ecd14017ffa4e5f2a0e34/052025/du-khach-quoc-te_20250521155503.jpg" alt="Ấn tượng xứ Trà" />
+  <div class="card-content">
+  <h2>Ấn tượng xứ Trà với du khách quốc tế</h2>
+  <p>Du khách quốc tế chia sẻ trải nghiệm ấn tượng về văn hóa trà và con người Thái Nguyên.</p>
+  <a href="https://baothainguyen.vn/van-hoa/du-lich-thai-nguyen/202505/an-tuong-xu-tra-voi-du-khach-quoc-te-a2228ca/" target="_blank">Xem chi tiết</a>
+  </div>
+  </div>
+
+  <div class="card">
+  <iframe src="https://www.youtube.com/embed/Tz2MNhZqlwc" title="Trải nghiệm du lịch Thái Nguyên" allowfullscreen></iframe>
+  <div class="card-content">
+  <h2>Video: Trải nghiệm du lịch Thái Nguyên</h2>
+  <p>Hành trình khám phá văn hóa trà, thiên nhiên và con người Thái Nguyên qua video.</p>
+  <a href="https://www.youtube.com/watch?v=Tz2MNhZqlwc" target="_blank">Xem video</a>
+  </div>
+  </div>
+
+  <div class="card">
+  <img src="https://baothainguyen.vn/file/e7837c027f6ecd14017ffa4e5f2a0e34/052025/du-lich-thai-nguyen-1_20250518091415.jpg" alt="Hình ảnh Thái Nguyên" />
+  <div class="card-content">
+  <h2>Đưa hình ảnh Thái Nguyên lên bầu trời</h2>
+  <p>Quảng bá hình ảnh tỉnh Thái Nguyên qua công nghệ và truyền thông hiện đại.</p>
+  <a href="https://baothainguyen.vn/van-hoa/202505/dua-hinh-anh-thai-nguyen-len-bau-troi-1a437d7/" target="_blank">Xem chi tiết</a>
+  </div>
+  </div>
+
+  <div class="card">
+  <iframe src="https://www.youtube.com/embed/xXeG1-nHXYk" title="Trà Thái Nguyên - Hành trình văn hóa" allowfullscreen></iframe>
+  <div class="card-content">
+  <h2>Video: Trà Thái Nguyên - Hành trình văn hóa</h2>
+  <p>Khám phá trà Việt và hành trình phát triển thương hiệu trà Thái Nguyên.</p>
+  <a href="https://www.youtube.com/watch?v=xXeG1-nHXYk" target="_blank">Xem video</a>
+  </div>
+  </div>
+
+  <div class="card">
+  <img src="https://baothainguyen.vn/file/e7837c027f6ecd14017ffa4e5f2a0e34/052025/city-tour-thai-nguyen_20250515110755.jpg" alt="City Tour Thái Nguyên" />
+  <div class="card-content">
+  <h2>City Tour – sản phẩm du lịch mới</h2>
+  <p>Trải nghiệm thành phố Thái Nguyên theo phong cách hiện đại và thú vị.</p>
+  <a href="https://baothainguyen.vn/van-hoa/du-lich-thai-nguyen/202505/city-tour-san-pham-du-lich-moi-noi-dat-thep-xu-tra-c251449/" target="_blank">Xem chi tiết</a>
+  </div>
+  </div>
+
+  <div class="card">
+  <img src="https://baothainguyen.vn/file/e7837c027f6ecd14017ffa4e5f2a0e34/052025/du-lich-cong-dong_20250513204015.jpg" alt="Du lịch cộng đồng" />
+  <div class="card-content">
+  <h2>Du lịch cộng đồng lan tỏa văn hóa</h2>
+  <p>Gắn du lịch với bảo tồn văn hóa dân tộc thiểu số tại Thái Nguyên.</p>
+  <a href="https://baothainguyen.vn/van-hoa/du-lich-thai-nguyen/202505/du-lich-cong-dong-lan-toa-van-hoa-dan-toc-thieu-so-de507b1/" target="_blank">Xem chi tiết</a>
+  </div>
+  </div>
+
+  <div class="card">
+  <img src="https://baothainguyen.vn/file/e7837c027f6ecd14017ffa4e5f2a0e34/052025/anh_dinh_copy_20250508152741.png" alt="Thái Hải" />
+  <div class="card-content">
+  <h2>Chín bậc tình yêu trong ngôi nhà chung</h2>
+  <p>Khám phá làng Thái Hải - nơi kết nối cộng đồng, tình yêu và văn hóa dân tộc.</p>
+  <a href="https://baothainguyen.vn/multimedia/emagazine/202505/chin-bac-tinh-yeu-trong-ngoi-nha-chung-thai-hai-39520b7/" target="_blank">Xem chi tiết</a>
+  </div>
+  </div>
+
+  <div class="card">
+  <iframe src="https://www.youtube.com/embed/f_2T6B4KwVg" title="Bản sắc văn hóa Thái Nguyên" allowfullscreen></iframe>
+  <div class="card-content">
+  <h2>Video: Bản sắc văn hóa Thái Nguyên</h2>
+  <p>Những góc nhìn mới mẻ về di sản, văn hóa và con người Thái Nguyên.</p>
+  <a href="https://www.youtube.com/watch?v=f_2T6B4KwVg" target="_blank">Xem video</a>
+  </div>
+  </div>
+  </div>
+
+  <script>
+  // Add fade-in class to body when the page is loaded
+  window.addEventListener('load', () => {
+  document.body.classList.add('fade-in');
+  });
+
+  // Hamburger menu functionality
+  const hamburger = document.querySelector(".hamburger");
+  const navLinks = document.querySelector(".nav-links");
+
+  hamburger.addEventListener("click", () => {
+  navLinks.classList.toggle("active");
+  });
+  (function(){if(!window.chatbase||window.chatbase("getState")!=="initialized"){window.chatbase=(...arguments)=>{if(!window.chatbase.q){window.chatbase.q=[]}window.chatbase.q.push(arguments)};window.chatbase=new Proxy(window.chatbase,{get(target,prop){if(prop==="q"){return target.q}return(...args)=>target(prop,...args)}})}const onLoad=function(){const script=document.createElement("script");script.src="https://www.chatbase.co/embed.min.js";script.id="Y36JqxzS7N6nBgADgNxNM";script.domain="www.chatbase.co";document.body.appendChild(script)};if(document.readyState==="complete"){onLoad()}else{window.addEventListener("load",onLoad)}})();
+  </script>
+
+ </body>
+ </html>
