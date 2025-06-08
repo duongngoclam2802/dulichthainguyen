@@ -30,7 +30,7 @@
             opacity: 0;
             transition: opacity 0.5s ease-in-out;
         }
-        
+
         body.fade-in { opacity: 1; }
 
         .container { width: 90%; max-width: 1200px; margin: 0 auto; }
@@ -58,13 +58,13 @@
         nav .nav-container {
             display: flex; justify-content: space-between; align-items: center;
             width: 90%; max-width: 1200px; margin: 0 auto;
-            position: relative; /* Thêm để định vị menu mobile */
+            position: relative;
         }
         .nav-logo a {
             display: flex; align-items: center; gap: 10px; text-decoration: none;
             color: var(--secondary-color); font-size: 1.5em; font-weight: 700;
         }
-        
+
         .nav-logo img { width: 35px; height: 35px; }
 
         .nav-menu {
@@ -72,9 +72,9 @@
             display: flex;
         }
 
-        .nav-menu li { 
-            opacity: 0; transform: translateY(-10px); 
-            animation: fadeInDown 0.5s ease forwards; 
+        .nav-menu li {
+            opacity: 0; transform: translateY(-10px);
+            animation: fadeInDown 0.5s ease forwards;
         }
         .nav-menu li:nth-child(1) { animation-delay: 0.1s; }
         .nav-menu li:nth-child(2) { animation-delay: 0.2s; }
@@ -84,7 +84,7 @@
         .nav-menu li:nth-child(6) { animation-delay: 0.6s; }
         .nav-menu li:nth-child(7) { animation-delay: 0.7s; }
         @keyframes fadeInDown { to { opacity: 1; transform: translateY(0); } }
-        
+
         .nav-menu a {
             display: block; text-decoration: none; color: var(--text-dark);
             font-weight: 500; font-size: 1em; padding: 15px; transition: color 0.3s ease;
@@ -93,7 +93,7 @@
         nav a:not(.active):hover { color: var(--primary-color); }
 
         .menu-toggle {
-            display: none; /* Ẩn mặc định trên desktop */
+            display: none;
             font-size: 2em;
             background: none;
             border: none;
@@ -101,8 +101,127 @@
             cursor: pointer;
         }
 
-        /* --- Reponsive cho Mobile --- */
-        /* --- Reponsive cho Mobile --- */
+        /* --- Băng chuyền hình ảnh (SLIDER) & TIÊU ĐỀ --- */
+        .slider-container {
+            width: 100%; height: 70vh; max-height: 600px; margin-top: 20px;
+            position: relative; overflow: hidden; border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            display: flex; align-items: center; justify-content: center;
+        }
+
+        /* TIÊU ĐỀ CHÍNH TRÊN SLIDER */
+        .main-title-overlay {
+            position: absolute;
+            z-index: 11;
+            text-align: center;
+            color: var(--white-color);
+            padding: 20px;
+        }
+
+        .main-title-overlay h1 {
+            font-size: 4.5em; /* Kích thước cho Desktop */
+            font-weight: 900;
+            text-shadow: 0 4px 10px rgba(0,0,0,0.5);
+            margin: 0;
+        }
+
+        .main-title-overlay p {
+            font-size: 1.5em; /* Kích thước cho Desktop */
+            font-weight: 400;
+            text-shadow: 0 2px 5px rgba(0,0,0,0.5);
+            margin-top: 10px;
+            opacity: 0.9;
+        }
+
+        .slides { display: flex; width: 100%; height: 100%; transition: transform 0.7s cubic-bezier(0.68, -0.55, 0.27, 1.55); position: absolute; top: 0; left: 0; z-index: 1; }
+        .slide { flex: 1 0 100%; height: 100%; position: relative; }
+        .slide img { width: 100%; height: 100%; object-fit: cover; filter: brightness(0.7); }
+        .slider-nav { position: absolute; top: 50%; transform: translateY(-50%); width: 100%; display: flex; justify-content: space-between; padding: 0 20px; z-index: 10; }
+        .slider-nav button { background-color: rgba(255, 255, 255, 0.2); border: 1px solid rgba(255,255,255,0.3); color: #fff; font-size: 24px; cursor: pointer; border-radius: 50%; width: 50px; height: 50px; display: flex; align-items: center; justify-content: center; transition: all 0.3s; }
+        .slider-nav button:hover { background-color: rgba(255, 255, 255, 0.5); transform: scale(1.1); }
+        .slider-dots { position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%); display: flex; gap: 10px; z-index: 10; }
+        .dot { width: 12px; height: 12px; border-radius: 50%; background-color: rgba(255, 255, 255, 0.4); border: 1px solid rgba(255,255,255,0.5); cursor: pointer; transition: all 0.3s; }
+        .dot.active { background-color: #fff; transform: scale(1.2); }
+
+        /* --- Nội dung chính --- */
+        main { padding: 40px 0; }
+        .section-wrapper { padding: 40px; background-color: var(--white-color); border-radius: 12px; box-shadow: 0 2px 15px var(--shadow-color); margin-bottom: 30px; }
+        .intro-section { display: flex; gap: 40px; margin-bottom: 40px; align-items: center; }
+        .intro-text h2 { font-size: 2.2em; color: var(--secondary-color); margin-bottom: 20px; }
+        .intro-image { flex: 1 1 45%; border-radius: 12px; overflow: hidden; box-shadow: 0 5px 20px rgba(0,0,0,0.1); }
+        .intro-image img { width: 100%; display: block; }
+        .intro-section.reverse { flex-direction: row-reverse; }
+        .section-title { text-align: center; margin-bottom: 40px; font-size: 2.5em; color: var(--secondary-color); }
+        .collapsible-section { border-bottom: 1px solid #e9ecef; }
+        .collapsible-section:last-child { border-bottom: none; }
+        .collapsible-header { padding: 25px 10px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; }
+        .collapsible-header h3 { margin: 0; font-size: 1.4em; font-weight: 500;}
+        .arrow { font-size: 1.4em; transition: transform 0.3s; }
+        .collapsible-content { padding: 0 10px 25px; max-height: 0; overflow: hidden; transition: max-height 0.4s ease-out; }
+        .open .arrow { transform: rotate(180deg); }
+        .open .collapsible-content { max-height: 1000px; }
+
+        /* --- Nút liên kết nổi kèm ảnh minh họa --- */
+        .scroll-image-link {
+            position: fixed;
+            bottom: 30px;
+            left: 30px;
+            z-index: 999;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.5s ease-in-out, visibility 0.5s ease-in-out, bottom 0.3s ease-out;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .scroll-image-link.show {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .scroll-image-link a {
+            display: inline-block;
+            background-color: var(--primary-color);
+            color: var(--white-color);
+            padding: 12px 20px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 1em;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            transition: background-color 0.3s ease, transform 0.3s ease;
+        }
+
+        .scroll-image-link a:hover {
+            background-color: var(--secondary-color);
+            transform: translateY(-3px);
+        }
+
+        .scroll-image-link img {
+            width: 80px;
+            height: 80px;
+            border-radius: 12px;
+            object-fit: cover;
+            border: 3px solid var(--white-color);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+            transition: opacity 0.3s ease, transform 0.3s ease;
+            opacity: 0;
+            transform: scale(0);
+        }
+
+        .scroll-image-link:hover img {
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        footer { text-align: center; padding: 30px 0; background: var(--text-dark); color: var(--text-light); }
+
+
+        /* =========================================================
+         * THIẾT KẾ RESPONSIVE
+         * =========================================================
+        */
         @media (max-width: 768px) {
             .menu-toggle {
                 display: block; /* Hiện nút hamburger trên mobile */
@@ -146,145 +265,44 @@
                 border-bottom: none;
             }
 
-            /* * =========================================================
-             * PHẦN SỬA ĐỔI NẰM Ở ĐÂY 
-             * Di chuyển vào trong @media query và điều chỉnh lại font-size
-             * =========================================================
-            */
+            /* --- ĐIỀU CHỈNH FONT CHO TIÊU ĐỀ SLIDER TRÊN MOBILE --- */
             .main-title-overlay h1 {
-                font-size: 1.5em; /* Kích thước cho tiêu đề chính trên mobile */
+                font-size: 2.2em; /* Giảm kích thước tiêu đề chính trên mobile */
+                line-height: 1.2;
             }
-            .main-title-overlay p {
-                font-size: 0.5em; /* Kích thước cho mô tả trên mobile */
-            }
-            /* ========================================================= */
 
-            /* Điều chỉnh các phần khác nếu cần */
+            .main-title-overlay p {
+                font-size: 0.9em; /* Giảm kích thước mô tả trên mobile */
+                margin-top: 5px;
+            }
+            /* --- KẾT THÚC ĐIỀU CHỈNH --- */
+
             .slider-container {
                 height: 50vh; /* Giảm chiều cao slider trên mobile */
+            }
+            
+            main {
+                padding: 20px 0;
+            }
+
+            .section-wrapper {
+                padding: 20px;
             }
 
             .intro-section {
                 flex-direction: column; /* Xếp chồng ảnh và chữ trên mobile */
+                gap: 20px;
+            }
+            
+            .intro-text h2 {
+                font-size: 1.8em;
+            }
+            
+            .section-title {
+                font-size: 2em;
             }
         }
-        
-        /* --- Băng chuyền hình ảnh (SLIDER) & TIÊU ĐỀ --- */
-        .slider-container {
-            width: 100%; height: 70vh; max-height: 600px; margin-top: 20px;
-            position: relative; overflow: hidden; border-radius: 12px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-            display: flex; align-items: center; justify-content: center;
-        }
-        
-        /* TIÊU ĐỀ CHÍNH TRÊN SLIDER */
-        .main-title-overlay {
-            position: absolute;
-            z-index: 11;
-            text-align: center;
-            color: var(--white-color);
-            padding: 20px;
-        }
-        
-        .main-title-overlay h1 {
-            font-size: 4.5em;
-            font-weight: 900;
-            text-shadow: 0 4px 10px rgba(0,0,0,0.5);
-            margin: 0;
-        }
-        
-        .main-title-overlay p {
-            font-size: 1.5em;
-            font-weight: 400;
-            text-shadow: 0 2px 5px rgba(0,0,0,0.5);
-            margin-top: 10px;
-            opacity: 0.9;
-        }
-        
-        .slides { display: flex; width: 100%; height: 100%; transition: transform 0.7s cubic-bezier(0.68, -0.55, 0.27, 1.55); position: absolute; top: 0; left: 0; z-index: 1; }
-        .slide { flex: 1 0 100%; height: 100%; position: relative; }
-        .slide img { width: 100%; height: 100%; object-fit: cover; filter: brightness(0.7); }
-        .slider-nav { position: absolute; top: 50%; transform: translateY(-50%); width: 100%; display: flex; justify-content: space-between; padding: 0 20px; z-index: 10; }
-        .slider-nav button { background-color: rgba(255, 255, 255, 0.2); border: 1px solid rgba(255,255,255,0.3); color: #fff; font-size: 24px; cursor: pointer; border-radius: 50%; width: 50px; height: 50px; display: flex; align-items: center; justify-content: center; transition: all 0.3s; }
-        .slider-nav button:hover { background-color: rgba(255, 255, 255, 0.5); transform: scale(1.1); }
-        .slider-dots { position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%); display: flex; gap: 10px; z-index: 10; }
-        .dot { width: 12px; height: 12px; border-radius: 50%; background-color: rgba(255, 255, 255, 0.4); border: 1px solid rgba(255,255,255,0.5); cursor: pointer; transition: all 0.3s; }
-        .dot.active { background-color: #fff; transform: scale(1.2); }
-        
-        /* --- Nội dung chính --- */
-        main { padding: 40px 0; }
-        .section-wrapper { padding: 40px; background-color: var(--white-color); border-radius: 12px; box-shadow: 0 2px 15px var(--shadow-color); margin-bottom: 30px; }
-        .intro-section { display: flex; gap: 40px; margin-bottom: 40px; align-items: center; }
-        .intro-text h2 { font-size: 2.2em; color: var(--secondary-color); margin-bottom: 20px; }
-        .intro-image { flex: 1 1 45%; border-radius: 12px; overflow: hidden; box-shadow: 0 5px 20px rgba(0,0,0,0.1); }
-        .intro-image img { width: 100%; display: block; }
-        .intro-section.reverse { flex-direction: row-reverse; }
-        .section-title { text-align: center; margin-bottom: 40px; font-size: 2.5em; color: var(--secondary-color); }
-        .collapsible-section { border-bottom: 1px solid #e9ecef; }
-        .collapsible-section:last-child { border-bottom: none; }
-        .collapsible-header { padding: 25px 10px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; }
-        .collapsible-header h3 { margin: 0; font-size: 1.4em; font-weight: 500;}
-        .arrow { font-size: 1.4em; transition: transform 0.3s; }
-        .collapsible-content { padding: 0 10px 25px; max-height: 0; overflow: hidden; transition: max-height 0.4s ease-out; }
-        .open .arrow { transform: rotate(180deg); }
-        .open .collapsible-content { max-height: 1000px; }
-        
-        /* --- Nút liên kết nổi kèm ảnh minh họa --- */
-        .scroll-image-link {
-            position: fixed;
-            bottom: 30px;
-            left: 30px;
-            z-index: 999;
-            opacity: 0;
-            visibility: hidden;
-            transition: opacity 0.5s ease-in-out, visibility 0.5s ease-in-out, bottom 0.3s ease-out; /* Thêm "bottom" vào transition */
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
 
-        .scroll-image-link.show {
-            opacity: 1;
-            visibility: visible;
-        }
-
-        .scroll-image-link a {
-            display: inline-block;
-            background-color: var(--primary-color);
-            color: var(--white-color);
-            padding: 12px 20px;
-            border-radius: 50px;
-            text-decoration: none;
-            font-weight: 700;
-            font-size: 1em;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-            transition: background-color 0.3s ease, transform 0.3s ease;
-        }
-
-        .scroll-image-link a:hover {
-            background-color: var(--secondary-color);
-            transform: translateY(-3px);
-        }
-
-        .scroll-image-link img {
-            width: 80px; /* Kích thước ảnh nhỏ */
-            height: 80px;
-            /* THAY ĐỔI: Chuyển từ hình tròn sang hình chữ nhật bo góc */
-            border-radius: 12px; 
-            object-fit: cover;
-            border: 3px solid var(--white-color);
-            box-shadow: 0 4px 10px rgba(0,0,0,0.15);
-            transition: opacity 0.3s ease, transform 0.3s ease;
-            opacity: 0; /* Ẩn ảnh mặc định */
-            transform: scale(0); /* Thu nhỏ ảnh mặc định */
-        }
-
-        .scroll-image-link:hover img {
-            opacity: 1; /* Hiện ảnh khi hover */
-            transform: scale(1); /* Phóng to ảnh khi hover */
-        }
-        
-        footer { text-align: center; padding: 30px 0; background: var(--text-dark); color: var(--text-light); }
     </style>
 </head>
 <body>
@@ -300,7 +318,7 @@
             </div>
 
             <button class="menu-toggle" onclick="toggleMenu()"> &#9776; </button>
-            
+
             <ul class="nav-menu">
                 <li><a href="index.html" class="active nav-link">Trang Chủ</a></li>
                 <li><a href="chatbot.html" class="nav-link">ChatBot</a></li>
@@ -331,7 +349,7 @@
             <div class="slider-nav"><button id="prevBtn">&#10094;</button><button id="nextBtn">&#10095;</button></div>
             <div class="slider-dots" id="slider-dots"></div>
         </div>
-        
+
         <main>
             <div class="section-wrapper">
                 <h2 class="section-title">Những Nét Đặc Trưng</h2>
@@ -401,7 +419,7 @@
     <div class="scroll-image-link">
         <img src="https://scontent.fhan4-6.fna.fbcdn.net/v/t39.30808-6/505219047_122106542906895461_3109683894517565187_n.jpg?_nc_cat=109&ccb=1-7&_nc_sid=127cfc&_nc_ohc=cxecylLMe8gQ7kNvwE_idgZ&_nc_oc=Admkmm9lviJ9CZsCbaM_uZvjlx7hKeiKHScrtkzVAAW8cvox3WVrkg5x7X0zYWscsDt2zG68xQQexNmdiZk4Nzam&_nc_zt=23&_nc_ht=scontent.fhan4-6.fna&_nc_gid=bTB5npQ7EkWl7M-V1znH_Q&oh=00_AfMYyguGuKFXFaTEOAIOsElwa-LBqkOymq8j3p0fvqo7qg&oe=684AD7C5" alt="Ảnh minh họa"> <a href="https://www.facebook.com/share/v/19oCjZoo8j/">Like Bài Viết !</a>
     </div>
-    
+
     <footer><p>&copy; 2025 Thái Nguyên Footprints. Mọi quyền được bảo lưu.</p>
         <p>Đ/c: Phú Bình - Thái Nguyên</p></footer>
 
@@ -444,45 +462,38 @@
 
         // --- LOGIC CHO MENU HAMBURGER ---
         function toggleMenu() {
-            // Tìm menu ul nằm bên trong thẻ nav
             const menu = document.querySelector('nav .nav-menu');
             menu.classList.toggle('open');
         }
 
-        // --- CẬP NHẬT: LOGIC CHO NÚT LIÊN KẾT NỔI ĐỂ KHÔNG CHE FOOTER ---
+        // --- LOGIC CHO NÚT LIÊN KẾT NỔI ĐỂ KHÔNG CHE FOOTER ---
         const scrollImageLink = document.querySelector('.scroll-image-link');
         const footer = document.querySelector('footer');
 
         function handleScrollImageLink() {
-            const scrollThreshold = 400; // Hiện nút sau khi cuộn 400px
+            const scrollThreshold = 400;
 
             if (window.scrollY > scrollThreshold) {
                 scrollImageLink.classList.add('show');
             } else {
                 scrollImageLink.classList.remove('show');
             }
-            
-            // Tính toán vị trí để tránh che footer
+
             const footerRect = footer.getBoundingClientRect();
             const viewportHeight = window.innerHeight;
 
             if (footerRect.top < viewportHeight) {
-                // Khi đỉnh của footer chạm vào màn hình, đẩy nút lên trên
-                const newBottomPosition = viewportHeight - footerRect.top + 20; // 20px là khoảng cách với footer
+                const newBottomPosition = viewportHeight - footerRect.top + 20;
                 scrollImageLink.style.bottom = `${newBottomPosition}px`;
             } else {
-                // Reset về vị trí mặc định khi footer chưa vào màn hình
                 scrollImageLink.style.bottom = '30px';
             }
         }
-        
-        window.addEventListener('scroll', handleScrollImageLink);
-        // Gọi hàm một lần khi tải trang để kiểm tra vị trí ban đầu
-        handleScrollImageLink();
 
+        window.addEventListener('scroll', handleScrollImageLink);
+        handleScrollImageLink(); // Gọi khi tải trang
 
         (function(){if(!window.chatbase||window.chatbase("getState")!=="initialized"){window.chatbase=(...arguments)=>{if(!window.chatbase.q){window.chatbase.q=[]}window.chatbase.q.push(arguments)};window.chatbase=new Proxy(window.chatbase,{get(target,prop){if(prop==="q"){return target.q}return(...args)=>target(prop,...args)}})}const onLoad=function(){const script=document.createElement("script");script.src="https://www.chatbase.co/embed.min.js";script.id="Y36JqxzS7N6nBgADgNxNM";script.domain="www.chatbase.co";document.body.appendChild(script)};if(document.readyState==="complete"){onLoad()}else{window.addEventListener("load",onLoad)}})();
-
     </script>
 </body>
 </html>
