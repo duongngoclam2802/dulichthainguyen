@@ -221,7 +221,7 @@
         /* =========================================================
          * THIẾT KẾ RESPONSIVE
          * =========================================================
-        */
+         */
         @media (max-width: 768px) {
             .menu-toggle {
                 display: block; /* Hiện nút hamburger trên mobile */
@@ -263,7 +263,7 @@
 
              .nav-menu li:last-child a {
                 border-bottom: none;
-            }
+             }
 
             /* --- ĐIỀU CHỈNH FONT CHO TIÊU ĐỀ SLIDER TRÊN MOBILE --- */
             .main-title-overlay h1 {
@@ -306,6 +306,8 @@
     </style>
 </head>
 <body>
+    <audio id="background-music" src="nhacnen.mp3" loop></audio>
+
     <div class="preloader"><div class="spinner"></div></div>
 
     <nav>
@@ -403,7 +405,7 @@
                         <p>Thái Nguyên là mái nhà chung của 8 dân tộc anh em (Kinh, Tày, Nùng, Sán Dìu, H'Mông, Sán Chay, Dao, Hoa). Sự đa dạng này tạo nên một bức tranh văn hóa đầy màu sắc, thể hiện qua trang phục, lễ hội (Lồng Tồng của người Tày), ẩm thực và các làng nghề thủ công truyền thống. Bảo tàng Văn hóa các dân tộc Việt Nam đặt tại Thái Nguyên chính là nơi lưu giữ và trưng bày di sản văn hóa phong phú này.</p>
                     </div>
                 </div>
-                      <div class="collapsible-section">
+                        <div class="collapsible-section">
                     <div class="collapsible-header" onclick="toggleSection(this)">
                         <h3>🍲 Ẩm thực đặc sắc</h3>
                         <span class="arrow">&#9660;</span>
@@ -494,6 +496,28 @@
         handleScrollImageLink(); // Gọi khi tải trang
 
         (function(){if(!window.chatbase||window.chatbase("getState")!=="initialized"){window.chatbase=(...arguments)=>{if(!window.chatbase.q){window.chatbase.q=[]}window.chatbase.q.push(arguments)};window.chatbase=new Proxy(window.chatbase,{get(target,prop){if(prop==="q"){return target.q}return(...args)=>target(prop,...args)}})}const onLoad=function(){const script=document.createElement("script");script.src="https://www.chatbase.co/embed.min.js";script.id="Y36JqxzS7N6nBgADgNxNM";script.domain="www.chatbase.co";document.body.appendChild(script)};if(document.readyState==="complete"){onLoad()}else{window.addEventListener("load",onLoad)}})();
+
+        // =========================================================
+        // PHẦN 2: THÊM JAVASCRIPT ĐỂ PHÁT NHẠC
+        // Kích hoạt bằng tương tác đầu tiên (cuộn, click, chạm) để đảm bảo hoạt động
+        // =========================================================
+        const backgroundMusic = document.getElementById('background-music');
+
+        function startMusicFirstInteraction() {
+            // Lệnh play() có thể bị trình duyệt chặn, nên dùng .catch() để tránh báo lỗi
+            backgroundMusic.play().catch(error => {
+                console.log("Trình duyệt đã chặn phát nhạc tự động: ", error);
+            });
+            // Gỡ bỏ các trình nghe sự kiện sau khi đã chạy 1 lần để tối ưu
+            document.body.removeEventListener('click', startMusicFirstInteraction);
+            document.body.removeEventListener('touchstart', startMusicFirstInteraction);
+            window.removeEventListener('scroll', startMusicFirstInteraction);
+        }
+
+        // Lắng nghe các sự kiện tương tác đầu tiên có thể xảy ra
+        document.body.addEventListener('click', startMusicFirstInteraction);
+        document.body.addEventListener('touchstart', startMusicFirstInteraction);
+        window.addEventListener('scroll', startMusicFirstInteraction);
     </script>
 </body>
 </html>
