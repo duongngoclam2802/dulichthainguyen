@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="vi">
 <head>
@@ -92,6 +91,31 @@
         }
         nav a.active { color: var(--primary-color); font-weight: 700; }
         nav a:not(.active):hover { color: var(--primary-color); }
+        /* === CSS CHO MŨI TÊN ĐỘNG === */
+        .menu-pointer-arrow {
+            display: none; /* Mặc định ẩn trên desktop */
+            position: absolute;
+            top: 50%;
+            /* Điều chỉnh vị trí `right` để nằm cạnh nút menu */
+            right: 60px; 
+            transform: translateY(-50%);
+            font-size: 2.5rem; /* Kích thước mũi tên */
+            color: #9d3131;
+            animation: point-to-menu 1.5s ease-in-out infinite;
+            pointer-events: none; /* Để không cản trở việc click */
+        }
+
+        /* Định nghĩa animation */
+        @keyframes point-to-menu {
+        0%, 100% {
+            transform: translateY(-50%) translateX(0);
+            opacity: 0.8;
+        }
+        50% {
+            transform: translateY(-50%) translateX(-10px);
+            opacity: 1;
+        }
+        }
 
         .menu-toggle {
             display: none;
@@ -224,6 +248,9 @@
          * =========================================================
          */
         @media (max-width: 768px) {
+            .menu-pointer-arrow {
+                display: block;
+            }
             .menu-toggle {
                 display: block; /* Hiện nút hamburger trên mobile */
             }
@@ -321,6 +348,7 @@
             </div>
 
             <button class="menu-toggle" onclick="toggleMenu()"> &#9776; </button>
+            <div class="menu-pointer-arrow">→</div>
 
             <ul class="nav-menu">
                 <li><a href="index.html" class="active nav-link">Trang Chủ</a></li>
