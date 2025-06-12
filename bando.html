@@ -10,11 +10,12 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"/>
 
 <style>
-    @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;700;900&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;900&display=swap');
 
     :root {
         --primary-color: #00796b;
         --secondary-color: #005a4d;
+        --accent-color: #ff9800; /* Màu cam cho check-in */
         --text-dark: #212529;
         --text-light: #f8f9fa;
         --background-light: #f4f7f6;
@@ -25,14 +26,13 @@
     * { margin: 0; padding: 0; box-sizing: border-box; }
     html { scroll-behavior: smooth; }
 
-    /* SỬA LỖI LAYOUT: Dùng Flexbox để quản lý layout chính */
-    html {
+    html, body {
         height: 100%;
+        overflow: hidden; /* Ngăn scroll toàn bộ trang */
     }
     body {
         display: flex;
         flex-direction: column;
-        height: 100vh; /* Quan trọng: body chiếm toàn bộ chiều cao màn hình */
         font-family: 'Montserrat', sans-serif;
         line-height: 1.7;
         background-color: var(--background-light);
@@ -40,127 +40,62 @@
         opacity: 0;
         transition: opacity 0.5s ease-in-out;
     }
-    
+
     body.fade-in { opacity: 1; }
 
     /* --- CSS CHO THANH ĐIỀU HƯỚNG --- */
     nav {
-        flex-shrink: 0; /* Ngăn nav co lại */
+        flex-shrink: 0;
         background-color: rgba(255, 255, 255, 0.97);
         backdrop-filter: blur(10px);
         padding: 10px 0;
         position: sticky;
         top: 0;
-        z-index: 1002; /* z-index cao hơn để luôn ở trên */
+        z-index: 1002;
         box-shadow: 0 2px 10px var(--shadow-color);
     }
     nav .nav-container {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        width: 90%;
-        max-width: 1200px;
-        margin: 0 auto;
+        display: flex; justify-content: space-between; align-items: center;
+        width: 90%; max-width: 1200px; margin: 0 auto;
     }
     .nav-logo a {
         display: flex; align-items: center; gap: 10px;
         text-decoration: none; color: var(--secondary-color);
-        font-size: 1.5em; font-weight: 700;
-        /* Đảm bảo logo không bị co lại */
-        flex-shrink: 0; 
+        font-size: 1.5em; font-weight: 700; flex-shrink: 0;
     }
     .nav-logo img { width: 35px; height: 35px; }
-
-    /* Menu cho desktop */
-    nav ul { 
-        list-style: none; 
-        display: flex; 
-        /* Đảm bảo các mục menu không bị co lại */
-        flex-shrink: 0;
-    }
+    nav ul { list-style: none; display: flex; flex-shrink: 0; }
     nav a {
         display: block; text-decoration: none; color: var(--text-dark);
         font-weight: 500; font-size: 1em; padding: 15px;
-        transition: color 0.3s ease;
-        /* Đảm bảo các chữ không bị chèn ép */
-        white-space: nowrap;
+        transition: color 0.3s ease; white-space: nowrap;
     }
     nav a.active { color: var(--primary-color); font-weight: 700; }
     nav a:not(.active):hover { color: var(--primary-color); }
-
-    /* Nút hamburger menu (chỉ hiển thị trên mobile) */
-    .hamburger-menu {
-        display: none; /* Mặc định ẩn */
-        font-size: 1.8em;
-        cursor: pointer;
-        color: var(--text-dark);
-    }
-
-    /* Off-canvas menu (menu ẩn) */
+    .hamburger-menu { display: none; font-size: 1.8em; cursor: pointer; color: var(--text-dark); }
     .mobile-menu {
-        display: flex;
-        flex-direction: column;
-        position: fixed;
-        top: 0;
-        right: -300px; /* Bắt đầu ẩn ngoài màn hình */
-        width: 250px; /* Chiều rộng menu */
-        height: 100%;
-        background-color: rgba(255, 255, 255, 0.97);
-        backdrop-filter: blur(10px);
-        box-shadow: -2px 0 10px rgba(0,0,0,0.1);
-        z-index: 1003;
-        transition: right 0.3s ease-in-out;
-        padding-top: 20px;
+        display: flex; flex-direction: column; position: fixed; top: 0; right: -300px;
+        width: 250px; height: 100%; background-color: rgba(255, 255, 255, 0.97);
+        backdrop-filter: blur(10px); box-shadow: -2px 0 10px rgba(0,0,0,0.1);
+        z-index: 1003; transition: right 0.3s ease-in-out; padding-top: 20px;
     }
-    .mobile-menu.open {
-        right: 0; /* Hiện menu */
-    }
-    .mobile-menu ul {
-        list-style: none;
-        display: flex;
-        flex-direction: column;
-        padding: 0;
-    }
+    .mobile-menu.open { right: 0; }
+    .mobile-menu ul { list-style: none; display: flex; flex-direction: column; padding: 0; }
     .mobile-menu li a {
-        padding: 15px 20px;
-        color: var(--text-dark);
-        text-decoration: none;
-        display: block;
-        border-bottom: 1px solid #eee;
-        white-space: nowrap;
+        padding: 15px 20px; color: var(--text-dark); text-decoration: none;
+        display: block; border-bottom: 1px solid #eee; white-space: nowrap;
     }
-    .mobile-menu li:last-child a {
-        border-bottom: none;
-    }
-    .mobile-menu li a:hover {
-        background-color: var(--background-light);
-        color: var(--primary-color);
-    }
+    .mobile-menu li:last-child a { border-bottom: none; }
+    .mobile-menu li a:hover { background-color: var(--background-light); color: var(--primary-color); }
     .close-mobile-menu {
-        font-size: 2em;
-        cursor: pointer;
-        align-self: flex-end;
-        padding: 10px 20px;
-        color: #999;
-        transition: color 0.3s ease;
+        font-size: 2em; cursor: pointer; align-self: flex-end;
+        padding: 10px 20px; color: #999; transition: color 0.3s ease;
     }
-    .close-mobile-menu:hover {
-        color: #333;
-    }
+    .close-mobile-menu:hover { color: #333; }
 
     /* --- CSS CHUNG CHO BẢN ĐỒ --- */
-    #map-container {
-        flex-grow: 1; /* Quan trọng: map container chiếm hết không gian còn lại */
-        position: relative;
-        overflow: hidden;
-    }
-
-    #map {
-        width: 100%;
-        height: 100%;
-    }
-
-    /* CSS cho thanh điều khiển tìm kiếm */
+    #map-container { flex-grow: 1; position: relative; overflow: hidden; }
+    #map { width: 100%; height: 100%; }
     #controls {
         position: absolute; top: 20px; left: 50%;
         transform: translateX(-50%); z-index: 1000;
@@ -168,52 +103,45 @@
         box-shadow: 0 2px 6px rgba(0,0,0,0.2);
         width: 90%; max-width: 400px;
     }
-
     #search-input {
         width: 100%; padding: 10px; font-size: 16px;
         border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box;
     }
-
     #suggestions-container {
         background-color: white; border: 1px solid #ddd;
         border-top: none; max-height: 200px; overflow-y: auto;
         display: none; z-index: 1001;
     }
-
     .suggestion-item { padding: 10px; cursor: pointer; }
     .suggestion-item:hover { background-color: #f0f0f0; }
 
-    /* CSS cho popup */
-    .popup-content h3 { margin: 0 0 5px 0; color: var(--secondary-color); }
+    /* --- CSS CHO POPUP --- */
+    .popup-content { max-width: 300px; }
+    .popup-content h3 { margin: 0 0 5px 0; color: var(--secondary-color); font-size: 1.1em;}
     .popup-content p { margin: 0 0 10px 0; font-size: 0.9em; color: #555; }
-    .directions-button {
-        background-color: var(--primary-color); color: white; padding: 8px 12px;
-        border: none; border-radius: 4px; cursor: pointer;
-        font-size: 14px; margin-top: 5px; transition: background-color 0.3s;
+    .popup-buttons { display: flex; gap: 10px; margin-top: 10px; }
+    .popup-button {
+        flex: 1; background-color: var(--primary-color); color: white; padding: 8px 12px;
+        border: none; border-radius: 4px; cursor: pointer; font-size: 14px;
+        transition: background-color 0.3s; text-align: center;
     }
-    .directions-button:hover { background-color: var(--secondary-color); }
-
-    /* --- CSS NÂNG CẤP CHO MENU BẢN ĐỒ (hiển thị trên mobile) --- */
-    /* Nút mở menu chính (trên bản đồ) */
-    .leaflet-control-menu a {
-        background-color: white; border-radius: 8px;
-        box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-        width: 40px; height: 40px; line-height: 40px;
-        cursor: pointer; text-align: center; display: block;
-        border: 1px solid #ddd;
+    .popup-button:hover { background-color: var(--secondary-color); }
+    .checkin-button { background-color: var(--accent-color); }
+    .checkin-button:hover { background-color: #e68900; }
+    .checkin-image-popup {
+        max-width: 100%; height: auto; margin-top: 10px;
+        border-radius: 5px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);
     }
-    .leaflet-control-menu i { font-size: 18px; color: #333; }
-    .leaflet-control-zoom a { border-radius: 8px !important; border: 1px solid #ddd !important; }
 
+    /* --- CSS CHO MENU BÊN TRÁI --- */
     #menu-panel {
-        position: absolute; top: 0; left: -320px;
-        width: 320px; height: 100%; background-color: #ffffff;
+        position: absolute; top: 0; left: -350px;
+        width: 350px; height: 100%; background-color: #ffffff;
         box-shadow: 4px 0 15px rgba(0,0,0,0.1); z-index: 1001;
         transition: left 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
         display: flex; flex-direction: column;
     }
     #menu-panel.open { left: 0; }
-
     #menu-header {
         padding: 20px; border-bottom: 1px solid #eee; display: flex;
         justify-content: space-between; align-items: center; flex-shrink: 0;
@@ -224,12 +152,22 @@
         padding: 5px; color: #999; transition: color 0.3s ease;
     }
     #close-menu-btn:hover { color: #333; }
-    
-    #menu-items { overflow-y: auto; flex-grow: 1; padding: 10px; }
-    #menu-items::-webkit-scrollbar { width: 8px; }
-    #menu-items::-webkit-scrollbar-track { background: #f1f1f1; }
-    #menu-items::-webkit-scrollbar-thumb { background: #ccc; border-radius: 4px; }
-    #menu-items::-webkit-scrollbar-thumb:hover { background: #aaa; }
+    .menu-tabs { display: flex; background-color: #f9f9f9; padding: 5px; border-bottom: 1px solid #eee; }
+    .tab-button {
+        flex: 1; padding: 12px 10px; border: none; background: none; cursor: pointer;
+        font-size: 0.9em; font-weight: 600; color: #888;
+        transition: color 0.3s, border-bottom 0.3s;
+        border-bottom: 3px solid transparent;
+    }
+    .tab-button.active { color: var(--primary-color); border-bottom-color: var(--primary-color); }
+    .menu-content { display: none; }
+    .menu-content.active { display: block; }
+    .menu-content-container { overflow-y: auto; flex-grow: 1; }
+    .menu-content-container::-webkit-scrollbar { width: 8px; }
+    .menu-content-container::-webkit-scrollbar-track { background: #f1f1f1; }
+    .menu-content-container::-webkit-scrollbar-thumb { background: #ccc; border-radius: 4px; }
+    .menu-content-container::-webkit-scrollbar-thumb:hover { background: #aaa; }
+    #menu-items, #checkin-list { padding: 10px; }
 
     .menu-item {
         display: flex; align-items: flex-start; gap: 15px; padding: 15px;
@@ -243,55 +181,89 @@
     .menu-item .item-name { font-weight: 600; color: #333; font-size: 1em; }
     .menu-item .item-desc { font-size: 0.85em; color: #666; margin-top: 5px; line-height: 1.4; }
 
-    /* --- Media Queries cho Responsive Design --- */
-    @media (max-width: 768px) {
-        nav ul {
-            display: none; /* Ẩn menu điều hướng trên mobile */
-        }
-        .hamburger-menu {
-            display: block; /* Hiển thị nút hamburger */
-        }
-        nav .nav-container {
-            width: 95%; /* Tăng chiều rộng trên mobile */
-            padding: 0 10px; /* Thêm padding ngang */
-        }
-        .nav-logo a {
-            font-size: 1.3em; /* Giảm kích thước logo */
-        }
-        .nav-logo img { width: 35px; height: 35px; }
-
-        /* Điều chỉnh thanh tìm kiếm trên mobile */
-        #controls {
-            width: 95%; /* Tăng chiều rộng thanh tìm kiếm */
-            top: 15px; /* Dịch lên trên một chút */
-            padding: 8px; /* Giảm padding */
-        }
-        #search-input {
-            font-size: 15px; /* Giảm kích thước chữ */
-        }
-
-        /* Điều chỉnh menu panel (menu danh sách địa điểm) */
-        #menu-panel {
-            width: 80%; /* Chiều rộng menu panel trên mobile */
-            max-width: 300px; /* Giới hạn chiều rộng tối đa */
-            left: -80%; /* Ẩn ngoài màn hình */
-        }
-        #menu-panel.open {
-            left: 0;
-        }
-        #menu-header {
-            padding: 15px;
-        }
-        #menu-header h2 {
-            font-size: 1.1em;
-        }
+    /* --- CSS CHO DANH SÁCH CHECK-IN --- */
+    .checkin-item {
+        display: flex; gap: 15px; padding: 15px;
+        border-bottom: 1px solid #f0f0f0; cursor: pointer;
+        transition: background-color 0.2s ease-in-out;
+    }
+    .checkin-item:hover { background-color: #fffaf0; }
+    .checkin-item-thumb {
+        width: 60px; height: 60px; object-fit: cover;
+        border-radius: 8px; flex-shrink: 0; background-color: #eee;
+    }
+    .checkin-item-content .item-name {
+        font-weight: 600; color: var(--accent-color); font-size: 1em;
+        display: flex; align-items: center; gap: 8px;
+    }
+    .checkin-item-content .item-date { font-size: 0.8em; color: #999; margin: 4px 0 8px 0; }
+    .checkin-item-content .item-memory {
+        font-size: 0.9em; color: #555; line-height: 1.5; white-space: pre-wrap;
     }
 
+    /* --- CSS CHO MODAL CHECK-IN --- */
+    #checkin-modal {
+        display: none; position: fixed; z-index: 2000; left: 0; top: 0;
+        width: 100%; height: 100%; overflow: auto;
+        background-color: rgba(0,0,0,0.5);
+        align-items: center; justify-content: center;
+    }
+    .modal-content {
+        background-color: #fefefe; margin: auto; padding: 25px 30px;
+        border: 1px solid #888; width: 90%; max-width: 500px;
+        border-radius: 10px; box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+        animation: modal-anim 0.4s;
+    }
+    @keyframes modal-anim {
+      from {transform: translateY(-50px); opacity: 0;}
+      to {transform: translateY(0); opacity: 1;}
+    }
+    .modal-header {
+        display: flex; justify-content: space-between; align-items: center;
+        border-bottom: 1px solid #eee; padding-bottom: 15px; margin-bottom: 20px;
+    }
+    .modal-header h2 { color: var(--secondary-color); margin: 0; }
+    .close-modal-btn { color: #aaa; font-size: 28px; font-weight: bold; cursor: pointer; }
+    .close-modal-btn:hover, .close-modal-btn:focus { color: black; }
+    .form-group { margin-bottom: 18px; }
+    .form-group label { display: block; margin-bottom: 8px; font-weight: 600; color: #444; }
+    .form-group input, .form-group textarea {
+        width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 5px;
+        font-size: 1em; font-family: 'Montserrat', sans-serif;
+    }
+    .form-group textarea { resize: vertical; min-height: 100px; }
+    .form-group input[type="file"] { display: none; }
+    .custom-file-upload {
+        border: 1px dashed #ccc; display: inline-block; padding: 10px 15px;
+        cursor: pointer; background-color: #f9f9f9; border-radius: 5px;
+    }
+    #image-preview {
+        margin-top: 15px; max-width: 100%; height: auto;
+        border-radius: 5px; display: none;
+    }
+    .modal-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px; }
+    .modal-button {
+        padding: 10px 20px; border-radius: 5px; border: none;
+        font-size: 1em; font-weight: 600; cursor: pointer; transition: opacity 0.3s;
+    }
+    .modal-button.save { background-color: var(--accent-color); color: white; }
+    .modal-button.cancel { background-color: #e0e0e0; color: #333; }
+    .modal-button:hover { opacity: 0.85; }
+
+    /* --- Media Queries --- */
+    @media (max-width: 768px) {
+        nav ul { display: none; }
+        .hamburger-menu { display: block; }
+        nav .nav-container { width: 95%; padding: 0 10px; }
+        .nav-logo a { font-size: 1.3em; }
+        #controls { width: 95%; top: 15px; padding: 8px; }
+        #search-input { font-size: 15px; }
+        #menu-panel { width: 85%; max-width: 350px; left: -85%; }
+        #menu-panel.open { left: 0; }
+    }
     @media (max-width: 480px) {
-        /* Điều chỉnh thêm cho màn hình rất nhỏ */
-        .nav-logo a span {
-            display: none; /* Ẩn chữ "Thái Nguyên" chỉ giữ icon */
-        }
+        .nav-logo a span { display: none; }
+        .modal-content { padding: 20px; }
     }
 </style>
 </head>
@@ -300,10 +272,7 @@
     <div class="nav-container">
         <div class="nav-logo">
             <a href="index.html">
-                <img src="logo.png" alt="Logo Thái Nguyên" class="logo-img">
-                    <path d="M50 95C50 95 95 80 95 50C95 20 50 5 50 5C50 5 5 20 5 50C5 80 50 95 50 95Z" stroke="currentColor" stroke-width="8"/>
-                    <path d="M50 5V55C50 55 65 50 75 40" stroke="currentColor" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
-                </svg>
+                <img src="images/logo.png" alt="Logo Thái Nguyên" class="logo-img">
                 <span>Thái Nguyên</span>
             </a>
         </div>
@@ -343,38 +312,95 @@
     <div id="map"></div>
     <div id="menu-panel">
         <div id="menu-header">
-            <h2>Địa điểm nổi bật</h2>
+            <h2>Khám phá Thái Nguyên</h2>
             <button id="close-menu-btn"><i class="fas fa-times"></i></button>
         </div>
-        <div id="menu-items"></div>
+        <div class="menu-tabs">
+            <button class="tab-button active" data-tab="featured-locations">Địa điểm nổi bật</button>
+            <button class="tab-button" data-tab="checkins">Kỷ niệm đã Check-in</button>
+        </div>
+        <div class="menu-content-container">
+            <div id="featured-locations" class="menu-content active">
+                <div id="menu-items"></div>
+            </div>
+            <div id="checkins" class="menu-content">
+                <div id="checkin-list"></div>
+            </div>
+        </div>
     </div>
 </div>
 
+<div id="checkin-modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2>Đánh dấu kỷ niệm</h2>
+            <span class="close-modal-btn">×</span>
+        </div>
+        <form id="checkin-form">
+            <div class="form-group">
+                <label for="location-name">Tên địa điểm:</label>
+                <input type="text" id="location-name" name="name" required>
+            </div>
+            <div class="form-group">
+                <label for="checkin-date">Ngày check-in:</label>
+                <input type="date" id="checkin-date" name="date" required>
+            </div>
+            <div class="form-group">
+                <label for="checkin-memory">Kỷ niệm của bạn:</label>
+                <textarea id="checkin-memory" name="memory" placeholder="Cảm xúc, câu chuyện của bạn ở nơi này..."></textarea>
+            </div>
+            <div class="form-group">
+                <label for="checkin-image">Ảnh kỷ niệm:</label>
+                <input type="file" id="checkin-image" name="image" accept="image/*">
+                <label for="checkin-image" class="custom-file-upload"><i class="fas fa-upload"></i> Chọn ảnh kỷ niệm</label>
+                <img id="image-preview" src="#" alt="Xem trước ảnh" />
+            </div>
+            <div class="modal-actions">
+                <button type="button" class="modal-button cancel">Hủy</button>
+                <button type="submit" class="modal-button save">Lưu kỷ niệm</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+
 <script>
 document.addEventListener('DOMContentLoaded', function () {
-    // Kích hoạt hiệu ứng fade-in
     document.body.classList.add('fade-in');
 
     const locations = [
         { name: "Hồ Núi Cốc", lat: 21.5839, lng: 105.7107, description: "Khu du lịch sinh thái nổi tiếng bậc nhất tỉnh." },
-        { name: "Bảo tàng Văn hóa các dân tộc Việt Nam", lat: 21.5915, lng: 105.8457, description: "Nơi lưu giữ văn hóa của 54 dân tộc anh em." },
-        { name: "Đền Đuổm", lat: 21.7821, lng: 105.7878, description: "Ngôi đền cổ thờ danh tướng Dương Tự Minh." },
-        { name: "Khu di tích ATK Định Hóa", lat: 21.8909, lng: 105.6262, description: "Thủ đô kháng chiến trong cuộc kháng chiến chống Pháp." },
-        { name: "Thác Nặm Rứt (Thác 7 tầng)", lat: 21.8025, lng: 105.6792, description: "Thác nước tự nhiên hùng vĩ, còn giữ vẻ hoang sơ." },
+        { name: "Đồi chè Tân Cương", lat: 21.5586, lng: 105.7642, description: "Những đồi chè xanh mướt, biểu tượng của Thái Nguyên." },
+        { name: "Hang Phượng Hoàng", lat: 21.7865, lng: 105.9961, description: "Quần thể hang động đẹp với nhiều nhũ đá kỳ ảo." },
+        { name: "Suối Mỏ Gà", lat: 21.7879, lng: 105.9982, description: "Dòng suối trong vắt chảy ra từ lòng hang Phượng Hoàng." },
+        { name: "Thác Khuôn Tát (Thác 7 tầng)", lat: 21.8025, lng: 105.6792, description: "Thác nước 7 tầng hùng vĩ giữa núi rừng Định Hóa." },
+        { name: "Suối Đát Đắng", lat: 21.7584, lng: 105.6591, description: "Dòng suối hoang sơ với những ghềnh đá độc đáo ở Định Hóa." },
+        { name: "Hồ Ghềnh Chè", lat: 21.5033, lng: 105.8906, description: "Hồ nước trong xanh, là điểm cắm trại lý tưởng." },
+        { name: "Động Linh Sơn", lat: 21.7211, lng: 105.8115, description: "Hang động tự nhiên trong lòng núi voi ở Đồng Hỷ." },
         { name: "Chùa Hang (Kim Sơn Tự)", lat: 21.6195, lng: 105.8277, description: "Ngôi chùa nằm trong hang động với kiến trúc độc đáo." },
-        { name: "Không gian văn hoá trà Tân Cương", lat: 21.5430, lng: 105.7720, description: "Vùng chè đặc sản nổi tiếng của Việt Nam." },
-        { name: "Hồ Suối Lạnh", lat: 21.4649, lng: 105.9189, description: "Hồ nước yên bình với cảnh sắc sơn thủy hữu tình." },
-        { name: "Thác Mưa Rơi", lat: 21.8651, lng: 105.6133, description: "Thác nước đẹp như một dải lụa trắng giữa núi rừng." },
-        { name: "Bảo tàng quân khu 1", lat: 21.5901, lng: 105.8365, description: "Nơi trưng bày các hiện vật lịch sử quân sự." },
-        { name: "Huyện Phú Bình", lat: 21.4386, lng: 105.9533, description: "Nổi tiếng với các làng nghề truyền thống đặc sắc." }
+        { name: "Khu di tích ATK Định Hóa", lat: 21.8909, lng: 105.6262, description: "Thủ đô kháng chiến trong cuộc kháng chiến chống Pháp." },
+        { name: "Bảo tàng Văn hóa các Dân tộc Việt Nam", lat: 21.5915, lng: 105.8457, description: "Nơi lưu giữ văn hóa của 54 dân tộc anh em." },
+        { name: "Đền Đuổm (DuMom Temple)", lat: 21.7821, lng: 105.7878, description: "Ngôi đền cổ thờ danh tướng Dương Tự Minh." },
+        { name: "Không gian Văn hóa Trà Tân Cương", lat: 21.5430, lng: 105.7720, description: "Tìm hiểu văn hóa và thưởng thức trà đặc sản." },
+        { name: "Quảng trường Võ Nguyên Giáp", lat: 21.5878, lng: 105.8488, description: "Trung tâm của thành phố Thái Nguyên, nơi diễn ra các sự kiện lớn." },
+        { name: "Thác Nặm Rứt (Thác Mưa Rơi)", lat: 21.8651, lng: 105.6133, description: "Thác nước đẹp như một dải lụa trắng giữa núi rừng ATK." },
+        { name: "Khu du lịch sinh thái Thái Hải", lat: 21.5366, lng: 105.8443, description: "Bảo tồn không gian sống của dân tộc Tày, Nùng." },
+        { name: "Suối Tiên (Võ Nhai)", lat: 21.8541, lng: 106.1264, description: "Cảnh quan thiên nhiên hoang sơ, hữu tình." },
+        { name: "Núi Văn - Núi Võ", lat: 21.4393, lng: 105.7836, description: "Di tích lịch sử gắn với cuộc khởi nghĩa của Lưu Nhân Chú." },
+        { name: "Hồ Vai Miếu", lat: 21.4649, lng: 105.9189, description: "Hồ nước nhân tạo với phong cảnh đẹp ở Đại Từ." }, // Alias của Hồ Suối Lạnh
+        { name: "Đền Đội Cấn", lat: 21.5912, lng: 105.8521, description: "Nơi thờ ông Đội Cấn, lãnh đạo cuộc khởi nghĩa Thái Nguyên 1917." },
+        { name: "Hang Sa Khao (Võ Nhai)", lat: 21.8215, lng: 106.0729, description: "Hang động đẹp thuộc huyện Võ Nhai." },
+        { name: "Thác Đồng Tiễn", lat: 21.6841, lng: 105.9754, description: "Thác nước đẹp ở huyện Đồng Hỷ." },
+        { name: "Hồ Suối Lạnh (Định Hóa)", lat: 21.7374, lng: 105.6882, description: "Hồ nước yên bình với cảnh sắc sơn thủy hữu tình ở Định Hóa." },
+        { name: "Đèo De", lat: 21.8386, lng: 105.6698, description: "Cung đường đèo hiểm trở nối Thái Nguyên và Tuyên Quang." },
+        { name: "Thác Nặm Lương", lat: 21.7761, lng: 105.6795, description: "Thác nước tự nhiên còn giữ vẻ hoang sơ tại Định Hóa." },
     ];
 
     const map = L.map('map', {
         zoomControl: false
-    }).setView([21.65, 105.80], 10);
-    
-    L.control.zoom({ position: 'topleft' }).addTo(map);
+    }).setView([21.65, 105.85], 10);
 
+    L.control.zoom({ position: 'topleft' }).addTo(map);
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         maxZoom: 19,
         attribution: '© <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
@@ -382,6 +408,133 @@ document.addEventListener('DOMContentLoaded', function () {
 
     let markers = [];
     const menuItemsContainer = document.getElementById('menu-items');
+    
+    // --- PHẦN MÃ MỚI CHO TÍNH NĂNG CHECK-IN ---
+    let userCheckins = [];
+    let currentCheckinCoords = null;
+    let currentImageBase64 = null;
+
+    const checkinModal = document.getElementById('checkin-modal');
+    const checkinForm = document.getElementById('checkin-form');
+    const checkinListContainer = document.getElementById('checkin-list');
+    const checkinImageInput = document.getElementById('checkin-image');
+    const imagePreview = document.getElementById('image-preview');
+
+    const checkedInIcon = L.icon({
+        iconUrl: 'https://cdn.rawgit.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-orange.png',
+        shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
+        iconSize: [25, 41], iconAnchor: [12, 41], popupAnchor: [1, -34], shadowSize: [41, 41]
+    });
+
+    window.openCheckinModal = function(lat, lng, name = '') {
+        currentCheckinCoords = { lat, lng };
+        checkinForm.reset();
+        imagePreview.style.display = 'none';
+        imagePreview.src = '#';
+        currentImageBase64 = null;
+        document.getElementById('location-name').value = name;
+        document.getElementById('checkin-date').valueAsDate = new Date();
+        checkinModal.style.display = 'flex';
+    }
+
+    function closeCheckinModal() { checkinModal.style.display = 'none'; }
+    
+    checkinImageInput.addEventListener('change', function(event) {
+        const file = event.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                imagePreview.src = e.target.result;
+                imagePreview.style.display = 'block';
+                currentImageBase64 = e.target.result;
+            }
+            reader.readAsDataURL(file);
+        }
+    });
+
+    checkinForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        const formData = new FormData(checkinForm);
+        const newCheckin = {
+            id: Date.now(),
+            name: formData.get('name'),
+            date: formData.get('date'),
+            memory: formData.get('memory'),
+            lat: currentCheckinCoords.lat,
+            lng: currentCheckinCoords.lng,
+            imageSrc: currentImageBase64
+        };
+        
+        userCheckins.push(newCheckin);
+        saveCheckins();
+        addCheckinToMap(newCheckin);
+        addCheckinToList(newCheckin);
+        closeCheckinModal();
+    });
+
+    function saveCheckins() {
+        localStorage.setItem('thainguyenUserCheckins', JSON.stringify(userCheckins));
+    }
+
+    function loadCheckins() {
+        const savedCheckins = localStorage.getItem('thainguyenUserCheckins');
+        if (savedCheckins) {
+            userCheckins = JSON.parse(savedCheckins);
+            renderAllCheckins();
+        }
+    }
+
+    function renderAllCheckins() {
+        checkinListContainer.innerHTML = '';
+        userCheckins.forEach(checkin => {
+            addCheckinToMap(checkin);
+            addCheckinToList(checkin);
+        });
+    }
+
+    function addCheckinToMap(checkin) {
+        const imageHtml = checkin.imageSrc ? `<img src="${checkin.imageSrc}" alt="Kỷ niệm" class="checkin-image-popup">` : '';
+        const popupContent = `
+            <div class="popup-content">
+                <h3><i class="fas fa-flag" style="color: var(--accent-color);"></i> ${checkin.name}</h3>
+                <p><strong>Ngày:</strong> ${new Date(checkin.date).toLocaleDateString('vi-VN')}</p>
+                <p><strong>Kỷ niệm:</strong> ${checkin.memory || '<i>Không có ghi chú.</i>'}</p>
+                ${imageHtml}
+            </div>`;
+        L.marker([checkin.lat, checkin.lng], { icon: checkedInIcon })
+            .addTo(map)
+            .bindPopup(popupContent);
+    }
+
+    function addCheckinToList(checkin) {
+        const item = document.createElement('div');
+        item.className = 'checkin-item';
+        const imageHtml = checkin.imageSrc 
+            ? `<img src="${checkin.imageSrc}" class="checkin-item-thumb" alt="Ảnh nhỏ">`
+            : `<div class="checkin-item-thumb" style="display: flex; align-items: center; justify-content: center; font-size: 24px; color: #ccc;"><i class="fas fa-image"></i></div>`;
+            
+        item.innerHTML = `
+            ${imageHtml}
+            <div class="checkin-item-content">
+                <div class="item-name"><i class="fas fa-flag"></i>${checkin.name}</div>
+                <div class="item-date">Ngày: ${new Date(checkin.date).toLocaleDateString('vi-VN')}</div>
+                <p class="item-memory">${checkin.memory || '<i>Không có ghi chú.</i>'}</p>
+            </div>
+        `;
+        item.addEventListener('click', () => {
+            map.setView([checkin.lat, checkin.lng], 15);
+            toggleMenu();
+        });
+        checkinListContainer.prepend(item);
+    }
+    
+    checkinModal.querySelector('.close-modal-btn').onclick = closeCheckinModal;
+    checkinModal.querySelector('.modal-button.cancel').onclick = closeCheckinModal;
+    window.addEventListener('click', (event) => { if (event.target == checkinModal) closeCheckinModal(); });
+
+    map.on('contextmenu', function(e) { openCheckinModal(e.latlng.lat, e.latlng.lng); });
+
+    // --- KẾT THÚC PHẦN MÃ MỚI ---
 
     locations.forEach(location => {
         const marker = L.marker([location.lat, location.lng]).addTo(map);
@@ -389,9 +542,14 @@ document.addEventListener('DOMContentLoaded', function () {
             <div class="popup-content">
                 <h3>${location.name}</h3>
                 <p>${location.description}</p>
-                <button class="directions-button" onclick="openDirections(${location.lat}, ${location.lng})">
-                    <i class="fas fa-directions"></i> Chỉ đường
-                </button>
+                <div class="popup-buttons">
+                    <button class="popup-button" onclick="openDirections(${location.lat}, ${location.lng})">
+                        <i class="fas fa-directions"></i> Chỉ đường
+                    </button>
+                    <button class="popup-button checkin-button" onclick="openCheckinModal(${location.lat}, ${location.lng}, '${location.name.replace(/'/g, "\\'")}')">
+                        <i class="fas fa-flag"></i> Check-in
+                    </button>
+                </div>
             </div>`;
         marker.bindPopup(popupContent);
         markers.push({ name: location.name, marker: marker, lat: location.lat, lng: location.lng });
@@ -406,15 +564,13 @@ document.addEventListener('DOMContentLoaded', function () {
             </div>`;
         menuItem.addEventListener('click', () => {
             focusOnLocation(location.name);
-            toggleMenu(); // Đóng menu panel sau khi chọn địa điểm
+            toggleMenu();
         });
         menuItemsContainer.appendChild(menuItem);
     });
 
     const menuPanel = document.getElementById('menu-panel');
-    function toggleMenu() {
-        menuPanel.classList.toggle('open');
-    }
+    function toggleMenu() { menuPanel.classList.toggle('open'); }
 
     L.Control.Menu = L.Control.extend({
         onAdd: function(map) {
@@ -429,23 +585,17 @@ document.addEventListener('DOMContentLoaded', function () {
     new L.Control.Menu({ position: 'topleft' }).addTo(map);
     document.getElementById('close-menu-btn').addEventListener('click', toggleMenu);
 
-    // SỬA LỖI: Cập nhật hàm chỉ đường với URL chính xác
     window.openDirections = function(lat, lng) {
-        // URL này sẽ mở Google Maps và đặt địa điểm làm đích đến
         const url = `https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}`;
         window.open(url, '_blank');
     }
 
     const searchInput = document.getElementById('search-input');
     const suggestionsContainer = document.getElementById('suggestions-container');
-
     searchInput.addEventListener('input', () => {
         const query = searchInput.value.toLowerCase().trim();
         suggestionsContainer.innerHTML = '';
-        if (!query) {
-            suggestionsContainer.style.display = 'none';
-            return;
-        }
+        if (!query) { suggestionsContainer.style.display = 'none'; return; }
         const filteredLocations = locations.filter(loc => loc.name.toLowerCase().includes(query));
         suggestionsContainer.style.display = filteredLocations.length > 0 ? 'block' : 'none';
         filteredLocations.forEach(loc => {
@@ -468,48 +618,36 @@ document.addEventListener('DOMContentLoaded', function () {
             target.marker.openPopup();
         }
     }
-
-    document.addEventListener('click', function(event) {
-        const controls = document.getElementById('controls');
-        if (!controls.contains(event.target)) {
-            suggestionsContainer.style.display = 'none';
-        }
-        
-        const menuButton = document.querySelector('.leaflet-control-menu');
-        if(menuPanel.classList.contains('open') && !menuPanel.contains(event.target) && !menuButton.contains(event.target)) {
-            toggleMenu();
-        }
-    });
-
-    // JavaScript cho hamburger menu (trên mobile)
-    const hamburgerMenu = document.querySelector('.hamburger-menu');
-    const mobileMenu = document.querySelector('.mobile-menu');
-    const closeMobileMenu = document.querySelector('.close-mobile-menu');
-    const navLinksMobile = document.querySelectorAll('.mobile-menu .nav-link');
-
-    hamburgerMenu.addEventListener('click', () => {
-        mobileMenu.classList.add('open');
-    });
-
-    closeMobileMenu.addEventListener('click', () => {
-        mobileMenu.classList.remove('open');
-    });
-
-    // Đóng mobile menu khi click vào một link
-    navLinksMobile.forEach(link => {
-        link.addEventListener('click', () => {
-            mobileMenu.classList.remove('open');
+    
+    const tabButtons = document.querySelectorAll('.tab-button');
+    const menuContents = document.querySelectorAll('.menu-content');
+    tabButtons.forEach(button => {
+        button.addEventListener('click', () => {
+            tabButtons.forEach(btn => btn.classList.remove('active'));
+            button.classList.add('active');
+            menuContents.forEach(content => content.classList.remove('active'));
+            document.getElementById(button.dataset.tab).classList.add('active');
         });
     });
 
-    // Đóng mobile menu khi click ra ngoài
     document.addEventListener('click', function(event) {
-        if (mobileMenu.classList.contains('open') && !mobileMenu.contains(event.target) && !hamburgerMenu.contains(event.target)) {
-            mobileMenu.classList.remove('open');
-        }
+        const controls = document.getElementById('controls');
+        if (!controls.contains(event.target)) suggestionsContainer.style.display = 'none';
+        const menuButton = document.querySelector('.leaflet-control-menu');
+        if(menuPanel.classList.contains('open') && !menuPanel.contains(event.target) && !menuButton.contains(event.target)) toggleMenu();
     });
+
+    const hamburgerMenu = document.querySelector('.hamburger-menu');
+    const mobileMenu = document.querySelector('.mobile-menu');
+    const closeMobileMenu = document.querySelector('.close-mobile-menu');
+    hamburgerMenu.addEventListener('click', () => mobileMenu.classList.add('open'));
+    closeMobileMenu.addEventListener('click', () => mobileMenu.classList.remove('open'));
+    document.addEventListener('click', function(event) {
+        if (mobileMenu.classList.contains('open') && !mobileMenu.contains(event.target) && !hamburgerMenu.contains(event.target)) mobileMenu.classList.remove('open');
+    });
+    
+    loadCheckins();
 });
-(function(){if(!window.chatbase||window.chatbase("getState")!=="initialized"){window.chatbase=(...arguments)=>{if(!window.chatbase.q){window.chatbase.q=[]}window.chatbase.q.push(arguments)};window.chatbase=new Proxy(window.chatbase,{get(target,prop){if(prop==="q"){return target.q}return(...args)=>target(prop,...args)}})}const onLoad=function(){const script=document.createElement("script");script.src="https://www.chatbase.co/embed.min.js";script.id="Y36JqxzS7N6nBgADgNxNM";script.domain="www.chatbase.co";document.body.appendChild(script)};if(document.readyState==="complete"){onLoad()}else{window.addEventListener("load",onLoad)}})();
 </script>
 </body>
 </html>
