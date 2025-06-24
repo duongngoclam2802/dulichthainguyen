@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Thử Thách Pha Chè Thái</title>
+    <title>Thử Thách Pha Chè Thái Nguyên</title>
     <meta name="description" content="Thử thách pha trà (chè) Thái Nguyên ,Chatbot hỗ trợ du lịch Thái Nguyên, khám phá địa điểm, bản đồ, đố vui, và trải nghiệm văn hóa.">
     <link rel="icon" href="logo.png" type="image/x-icon">
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -58,6 +58,41 @@
         body.fade-in {
             opacity: 1;
         }
+
+        /* === HIỆU ỨNG LÁ TRÀ RƠI (CSS MỚI) === */
+        #leaf-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            pointer-events: none;
+            z-index: 9999;
+        }
+
+        .leaf {
+            position: absolute;
+            top: -100px; 
+            width: 25px;
+            height: 25px;
+            background-image: url('https://cdn-icons-png.flaticon.com/512/892/892917.png'); /* Sử dụng URL ảnh lá trà */
+            background-size: contain;
+            background-repeat: no-repeat;
+            animation: fall linear infinite;
+        }
+
+        @keyframes fall {
+            0% {
+                transform: translateY(0) rotate(0deg);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(100vh) rotate(360deg);
+                opacity: 0;
+            }
+        }
+        /* === KẾT THÚC CSS HIỆU ỨNG LÁ TRÀ RƠI === */
 
         /* === THANH ĐIỀU HƯỚNG (NAV) === */
         nav {
@@ -446,6 +481,8 @@
 </head>
 
 <body>
+    <div id="leaf-container"></div>
+
     <nav>
         <div class="nav-container">
             <div class="nav-logo">
@@ -518,6 +555,41 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
+             // --- SCRIPT HIỆU ỨNG LÁ TRÀ RƠI (THÊM MỚI) ---
+            const leafContainer = document.getElementById('leaf-container');
+            const numberOfLeaves = 20; // Số lượng lá trà
+
+            function createLeaf() {
+                const leaf = document.createElement('div');
+                leaf.classList.add('leaf');
+                leafContainer.appendChild(leaf);
+
+                // Tạo vị trí, kích thước, và tốc độ ngẫu nhiên
+                const startX = Math.random() * window.innerWidth;
+                const size = Math.random() * 15 + 15; // Kích thước từ 15px đến 30px
+                const duration = Math.random() * 5 + 8; // Thời gian rơi từ 8s đến 13s
+                const delay = Math.random() * 5; // Bắt đầu rơi sau 0-5s
+
+                leaf.style.left = `${startX}px`;
+                leaf.style.width = `${size}px`;
+                leaf.style.height = `${size}px`;
+                leaf.style.animationDuration = `${duration}s`;
+                leaf.style.animationDelay = `${delay}s`;
+
+                // Xóa lá trà khỏi DOM sau khi animation kết thúc để tối ưu hiệu năng
+                leaf.addEventListener('animationend', () => {
+                    leaf.remove();
+                    // Tạo lá mới để duy trì hiệu ứng
+                     createLeaf();
+                });
+            }
+
+            for (let i = 0; i < numberOfLeaves; i++) {
+                createLeaf();
+            }
+             // --- KẾT THÚC SCRIPT HIỆU ỨNG ---
+
+
             // Hiệu ứng fade-in cho body
             document.body.classList.add('fade-in');
 
@@ -707,7 +779,6 @@
         });
         (function(){if(!window.chatbase||window.chatbase("getState")!=="initialized"){window.chatbase=(...arguments)=>{if(!window.chatbase.q){window.chatbase.q=[]}window.chatbase.q.push(arguments)};window.chatbase=new Proxy(window.chatbase,{get(target,prop){if(prop==="q"){return target.q}return(...args)=>target(prop,...args)}})}const onLoad=function(){const script=document.createElement("script");script.src="https://www.chatbase.co/embed.min.js";script.id="Y36JqxzS7N6nBgADgNxNM";script.domain="www.chatbase.co";document.body.appendChild(script)};if(document.readyState==="complete"){onLoad()}else{window.addEventListener("load",onLoad)}})();
     </script>
-    <!-- Google tag (gtag.js) -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-MDGVXG93S8"></script>
     <script>
       window.dataLayer = window.dataLayer || [];
