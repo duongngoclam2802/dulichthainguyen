@@ -10,6 +10,9 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    
     <style>
         /* --- Biến màu và cài đặt gốc --- */
         :root {
@@ -46,14 +49,12 @@
             color: var(--text-dark);
             opacity: 0;
             transition: opacity 0.5s ease-in-out;
-            
-            /* --- PHẦN SỬA LỖI BỐ CỤC CHO BODY --- */
             display: flex;
-            flex-direction: column; /* Xếp các mục con (nav, quiz-box) theo chiều dọc */
-            align-items: center;    /* Căn giữa các mục con theo chiều ngang */
+            flex-direction: column;
+            align-items: center;
             min-height: 100vh;
-            overflow-x: hidden; /* Ngăn chặn scroll ngang */
-            padding: 0; /* Đảm bảo không có padding body */
+            overflow-x: hidden;
+            padding: 0;
         }
 
         body.fade-in {
@@ -70,7 +71,7 @@
             z-index: 1000;
             box-shadow: 0 2px 10px var(--shadow-color);
             width: 100%;
-            margin-bottom: 20px; /* Thêm khoảng cách với nội dung game */
+            margin-bottom: 20px;
         }
         
         nav .nav-container {
@@ -99,13 +100,10 @@
         
         nav ul {
             list-style: none;
-            display: flex; /* Mặc định hiển thị trên desktop */
+            display: flex;
             margin: 0;
             padding: 0;
         }
-        
-        /* Đã bỏ animation cho từng li ở đây vì nó sẽ được quản lý qua JS khi toggle menu */
-        
         
         @keyframes fadeInDown {
             from { opacity: 0; transform: translateY(-10px); }
@@ -120,7 +118,7 @@
             font-size: 1em;
             padding: 15px;
             transition: color 0.3s ease;
-            white-space: nowrap; /* Đảm bảo chữ không bị xuống dòng */
+            white-space: nowrap;
         }
         
         nav a.active {
@@ -132,9 +130,8 @@
             color: var(--primary-color);
         }
 
-        /* Hamburger menu icon */
         .menu-toggle {
-            display: none; /* Ẩn theo mặc định trên desktop */
+            display: none;
             font-size: 1.8em;
             cursor: pointer;
             color: var(--primary-color);
@@ -165,7 +162,7 @@
 
         /* --- Khung Game --- */
         .quiz-container {
-            display: none; /* Sẽ được hiển thị bằng JS */
+            display: none;
             flex-direction: column;
             padding: 30px;
             border-radius: 20px;
@@ -175,7 +172,7 @@
             background: var(--white-color);
             text-align: center;
             position: relative;
-            margin-bottom: 50px; /* Thêm khoảng cách dưới cùng */
+            margin-bottom: 50px;
         }
         
         h1 {
@@ -289,71 +286,65 @@
         
         #final-result {
             display: none;
-            /* Cần thêm flex-direction: column để các mục con được căn giữa */
             flex-direction: column; 
             justify-content: center;
             align-items: center;
         }
 
         /* --- Responsive cho thiết bị di động --- */
-        /* Mặc định cho màn hình lớn hơn */
         @media (min-width: 992px) {
             nav ul {
-                display: flex; /* Đảm bảo menu hiển thị ngang trên desktop */
+                display: flex;
             }
             .menu-toggle {
-                display: none; /* Ẩn hamburger trên desktop */
+                display: none;
             }
         }
 
-        /* Giao diện máy tính bảng và điện thoại (max-width: 991px) */
         @media (max-width: 991px) {
             nav .nav-container {
-                flex-direction: row; /* Giữ logo và toggle trên 1 hàng */
-                justify-content: space-between; /* Đẩy logo sang trái, toggle sang phải */
+                flex-direction: row;
+                justify-content: space-between;
                 align-items: center;
             }
 
             nav ul {
-                display: none; /* Ẩn menu mặc định trên mobile */
-                flex-direction: column; /* Sắp xếp các mục theo chiều dọc */
+                display: none;
+                flex-direction: column;
                 width: 100%;
                 text-align: center;
-                position: absolute; /* Đặt menu overlay */
-                top: 60px; /* Vị trí dưới thanh nav (chiều cao nav khoảng 60px) */
+                position: absolute;
+                top: 60px;
                 left: 0;
                 background-color: rgba(255, 255, 255, 0.97);
                 box-shadow: 0 8px 16px var(--shadow-color);
                 border-top: 1px solid #eee;
                 padding: 10px 0;
-                /* Bỏ animation ở đây để JS quản lý tốt hơn */
             }
 
             nav ul.active {
-                display: flex; /* Hiển thị menu khi có class 'active' */
+                display: flex;
             }
 
-            /* Đảm bảo các mục li hiển thị bình thường khi menu active */
             nav ul.active li {
                 opacity: 1; 
                 transform: translateY(0); 
             }
 
             nav a {
-                padding: 12px 15px; /* Điều chỉnh padding cho menu mobile */
-                border-bottom: 1px solid #f0f0f0; /* Thêm đường kẻ phân cách */
+                padding: 12px 15px;
+                border-bottom: 1px solid #f0f0f0;
             }
 
             nav ul li:last-child a {
-                border-bottom: none; /* Xóa đường kẻ ở mục cuối cùng */
+                border-bottom: none;
             }
 
             .menu-toggle {
-                display: block; /* Hiển thị icon hamburger */
+                display: block;
             }
         }
 
-        /* Giao diện điện thoại nhỏ hơn (max-width: 480px) */
         @media (max-width: 480px) {
             .quiz-container { padding: 20px; }
             h1 { font-size: 24px; }
@@ -380,9 +371,6 @@
             <div class="nav-logo">
                 <a href="index.html">
                     <img src="logo.png" alt="Logo Thái Nguyên" class="logo-img">
-                        <path d="M50 95C50 95 95 80 95 50C95 20 50 5 50 5C50 5 5 20 5 50C5 80 50 95 50 95Z" stroke="currentColor" stroke-width="8"/>
-                        <path d="M50 5V55C50 55 65 50 75 40" stroke="currentColor" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
-                    </svg>
                     <span>Thái Nguyên</span>
                 </a>
             </div>
@@ -429,11 +417,34 @@
             <h1>Hoàn thành!</h1>
             <p id="final-score" style="font-size: 20px; margin: 15px 0;"></p>
             <p id="final-message" style="margin-bottom: 25px;"></p>
+    
+            <div id="save-score-form" style="display: flex; flex-direction: column; align-items: center; gap: 10px; margin-bottom: 20px; width: 80%;">
+                <input type="text" id="player-name" placeholder="Nhập tên của bạn" style="padding: 10px; border-radius: 8px; border: 1px solid #ccc; width: 100%; text-align: center;">
+                <button id="save-score-btn" onclick="saveScore()">💾 Lưu điểm</button>
+                <p id="save-status" style="font-size: 14px; color: green; min-height: 20px;"></p>
+            </div>
+    
             <button id="restart-btn" onclick="restartQuiz()">🔄 Chơi lại</button>
+            
+            <div id="leaderboard-container" style="margin-top: 30px; width: 100%; border-top: 1px solid #eee; padding-top: 20px;">
+                <h2>Bảng Xếp Hạng</h2>
+                <ol id="leaderboard-list" style="list-style-position: inside; padding: 0; text-align: left;"></ol>
+            </div>
         </div>
     </div>
 
 <script>
+    const SUPABASE_URL = 'https://rsgczrpzbsbizwireezg.supabase.co'; 
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJzZ2N6cnB6YnNiaXp3aXJlZXpnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTA4MTk3MjUsImV4cCI6MjA2NjM5NTcyNX0.v1RYdDpZQJByIOo_rcZzh3I_9aSSh1djv_mjakOPsrY';
+
+   
+    if (SUPABASE_URL === 'YOUR_SUPABASE_URL' || SUPABASE_ANON_KEY === 'YOUR_SUPABASE_ANON_KEY') {
+        alert('CẢNH BÁO: Bạn chưa cấu hình Supabase URL và Anon Key. Chức năng lưu điểm sẽ không hoạt động.');
+    }
+    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+
+//Dữ liụ
     const questions = [
         {
             question: "🌄 Thác nước nào được xem là một trong những thác đẹp nhất Thái Nguyên, nằm ở huyện Đại Từ?",
@@ -507,11 +518,12 @@
         }
     ];
 
+    // --- BIẾN TRẠNG THÁI GAME ---
     let currentQuestionIndex = 0;
     let score = 0;
     let answered = false;
 
-    // Lấy các element từ DOM
+    // --- LẤY CÁC ELEMENT TỪ DOM ---
     const loadingEl = document.getElementById('loading');
     const quizEl = document.getElementById('quiz');
     const gameViewEl = document.getElementById('game-view');
@@ -525,8 +537,11 @@
     const hintBtn = document.getElementById('hint-btn');
     const menuToggle = document.getElementById('menu-toggle');
     const mainNav = document.getElementById('main-nav');
-    
-    // Hàm hiển thị câu hỏi
+    const saveScoreForm = document.getElementById('save-score-form');
+    const saveStatus = document.getElementById('save-status');
+    const leaderboardList = document.getElementById('leaderboard-list');
+
+    // --- CÁC HÀM XỬ LÝ GAME ---
     function showQuestion() {
         answered = false;
         resetState();
@@ -544,11 +559,9 @@
         
         scoreEl.textContent = `Điểm: ${score} / ${questions.length}`;
         nextBtn.textContent = (currentQuestionIndex === questions.length - 1) ? '🏁 Hoàn thành' : '➡️ Câu tiếp theo';
-        // Vô hiệu hóa nút next khi mới vào câu hỏi mới
-        nextBtn.disabled = true; 
+        nextBtn.disabled = true;
     }
 
-    // Hàm reset trạng thái của các element
     function resetState() {
         hintEl.style.display = 'none';
         explanationEl.style.display = 'none';
@@ -559,7 +572,6 @@
         hintBtn.disabled = false;
     }
 
-    // Hàm xử lý khi chọn câu trả lời
     function selectAnswer(selectedBtn, index) {
         if (answered) return;
         answered = true;
@@ -576,29 +588,26 @@
             selectedBtn.classList.add('wrong');
         }
 
-        // Hiển thị đáp án đúng (luôn hiển thị, kể cả khi chọn sai)
         answerButtons.forEach((btn, i) => {
             if (i === q.correct) {
                 btn.classList.add('correct');
             }
-            btn.classList.add('disabled'); // Vô hiệu hóa tất cả các nút
+            btn.classList.add('disabled');
         });
         
         explanationEl.textContent = "🔎 Giải thích: " + q.explanation;
         explanationEl.style.display = 'block';
         scoreEl.textContent = `Điểm: ${score} / ${questions.length}`;
     }
-    
-    // Hàm hiển thị gợi ý
+
     function showHint() {
-        if (answered) return; // Không hiển thị gợi ý nếu đã trả lời
+        if (answered) return;
         const q = questions[currentQuestionIndex];
         hintEl.textContent = "💡 Gợi ý: " + q.hint;
         hintEl.style.display = 'block';
         hintBtn.disabled = true;
     }
 
-    // Hàm chuyển câu hỏi tiếp theo
     function nextQuestion() {
         if (!answered) {
             answersEl.style.animation = 'shake 0.5s';
@@ -612,11 +621,10 @@
             showFinalScore();
         }
     }
-    
-    // CẢI TIẾN: Hàm hiển thị điểm cuối cùng
+
     function showFinalScore() {
         gameViewEl.style.display = 'none';
-        finalResultEl.style.display = 'flex'; // Sử dụng flex để căn giữa
+        finalResultEl.style.display = 'flex';
         
         document.getElementById('final-score').textContent = `Điểm của bạn: ${score} / ${questions.length}`;
         
@@ -627,51 +635,126 @@
             message = "Khá lắm! Bạn đã có kiến thức rất tốt về Thái Nguyên!";
         }
         document.getElementById('final-message').textContent = message;
+        
+        // Reset và hiển thị form lưu điểm
+        saveScoreForm.style.display = 'flex';
+        document.getElementById('player-name').value = '';
+        document.getElementById('player-name').disabled = false;
+        document.getElementById('save-score-btn').disabled = false;
+        saveStatus.textContent = '';
+
+        fetchLeaderboard(); // Tải bảng xếp hạng
     }
-    
-    // CẢI TIẾN: Hàm chơi lại
+
     function restartQuiz() {
         score = 0;
         currentQuestionIndex = 0;
         finalResultEl.style.display = 'none';
-        gameViewEl.style.display = 'block'; // Hiển thị lại game-view
+        gameViewEl.style.display = 'block';
         showQuestion();
     }
 
-    // Hiển thị game sau khi tải xong
+    // --- CÁC HÀM TƯƠNG TÁC VỚI SUPABASE ---
+
+    // Hàm lấy dữ liệu bảng xếp hạng
+    async function fetchLeaderboard() {
+        leaderboardList.innerHTML = '<li>Đang tải...</li>';
+        try {
+            const { data, error } = await supabase
+                .from('leaderboard')
+                .select('player_name, score')
+                .order('score', { ascending: false })
+                .limit(10);
+
+            if (error) throw error;
+
+            if (data.length === 0) {
+                leaderboardList.innerHTML = '<li>Chưa có ai trên bảng xếp hạng. Hãy là người đầu tiên!</li>';
+                return;
+            }
+
+            leaderboardList.innerHTML = '';
+            data.forEach((player, index) => {
+                const li = document.createElement('li');
+                li.textContent = ` ${player.player_name} - ${player.score} điểm`;
+                
+                // Thêm icon cho top 3
+                if(index === 0) li.prepend('🥇');
+                else if(index === 1) li.prepend('🥈');
+                else if(index === 2) li.prepend('🥉');
+
+                leaderboardList.appendChild(li);
+            });
+        } catch (error) {
+            console.error('Lỗi khi tải bảng xếp hạng:', error.message);
+            leaderboardList.innerHTML = '<li>Không thể tải được bảng xếp hạng.</li>';
+        }
+    }
+
+    // Hàm lưu điểm
+    async function saveScore() {
+        const playerNameInput = document.getElementById('player-name');
+        const saveBtn = document.getElementById('save-score-btn');
+        const playerName = playerNameInput.value.trim();
+
+        if (!playerName) {
+            alert('Vui lòng nhập tên của bạn!');
+            return;
+        }
+
+        saveStatus.textContent = 'Đang lưu...';
+        saveBtn.disabled = true;
+
+        try {
+            const { error } = await supabase
+                .from('leaderboard')
+                .insert([{ player_name: playerName, score: score }]);
+
+            if (error) throw error;
+
+            saveStatus.textContent = 'Lưu điểm thành công!';
+            playerNameInput.disabled = true;
+            await fetchLeaderboard(); // Cập nhật lại bảng xếp hạng
+        } catch (error) {
+            console.error('Lỗi khi lưu điểm:', error.message);
+            saveStatus.textContent = 'Lưu điểm thất bại!';
+            saveBtn.disabled = false; // Cho phép thử lại
+        }
+    }
+
+
+    // --- KHỞI CHẠY KHI TẢI TRANG ---
     window.onload = () => {
-        document.body.classList.add('fade-in'); // Kích hoạt hiệu ứng fade-in
+        document.body.classList.add('fade-in');
         setTimeout(() => {
             loadingEl.style.display = 'none';
-            quizEl.style.display = 'flex'; // Sử dụng flex để căn giữa tốt hơn
+            quizEl.style.display = 'flex';
             showQuestion();
-        }, 1500); // Giảm thời gian chờ
+        }, 1500);
 
-        // Thêm Event Listener cho hamburger menu
         menuToggle.addEventListener('click', () => {
             mainNav.classList.toggle('active');
-            // Cải thiện: Bật/tắt animation cho từng li khi menu-toggle được nhấn
             Array.from(mainNav.children).forEach((li, index) => {
                 if (mainNav.classList.contains('active')) {
                     li.style.animation = `fadeInDown 0.5s ease forwards ${index * 0.1}s`;
                 } else {
-                    li.style.animation = ''; // Xóa animation khi đóng
+                    li.style.animation = '';
                 }
             });
         });
 
-        // Đóng menu khi click ra ngoài hoặc resize màn hình lớn hơn
         window.addEventListener('resize', () => {
             if (window.innerWidth >= 992 && mainNav.classList.contains('active')) {
                 mainNav.classList.remove('active');
-                 Array.from(mainNav.children).forEach(li => li.style.animation = '');
+                Array.from(mainNav.children).forEach(li => li.style.animation = '');
             }
         });
     };
+    
+    // Mã Chatbase (giữ nguyên)
     (function(){if(!window.chatbase||window.chatbase("getState")!=="initialized"){window.chatbase=(...arguments)=>{if(!window.chatbase.q){window.chatbase.q=[]}window.chatbase.q.push(arguments)};window.chatbase=new Proxy(window.chatbase,{get(target,prop){if(prop==="q"){return target.q}return(...args)=>target(prop,...args)}})}const onLoad=function(){const script=document.createElement("script");script.src="https://www.chatbase.co/embed.min.js";script.id="Y36JqxzS7N6nBgADgNxNM";script.domain="www.chatbase.co";document.body.appendChild(script)};if(document.readyState==="complete"){onLoad()}else{window.addEventListener("load",onLoad)}})();
 
 </script>
-<!-- Google tag (gtag.js) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-MDGVXG93S8"></script>
 <script>
   window.dataLayer = window.dataLayer || [];
