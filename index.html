@@ -188,7 +188,7 @@
         .arrow { font-size: 1.4em; transition: transform 0.3s; }
         .collapsible-content { padding: 0 10px 25px; max-height: 0; overflow: hidden; transition: max-height 0.4s ease-out; }
         .open .arrow { transform: rotate(180deg); }
-        .open .collapsible-content { max-height: 1000px; }
+        .open .collapsible-content { max-height: 1000px; /* Tăng max-height để chứa cả các thẻ gợi ý */ }
 
         /* --- Nút liên kết nổi kèm ảnh minh họa --- */
         .scroll-image-link {
@@ -243,6 +243,73 @@
             opacity: 1;
             transform: scale(1);
         }
+        
+        /* --- CSS CHO KHUNG GỢI Ý ĐỊA ĐIỂM --- */
+        .suggestion-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); /* Bố cục lưới tự động */
+            gap: 15px;
+            margin-top: 20px;
+            padding-top: 10px;
+            border-top: 1px solid #f0f0f0;
+            
+            /* Thuộc tính cho animation */
+            max-height: 0;
+            opacity: 0;
+            overflow: hidden;
+            transform: translateY(10px);
+            transition: max-height 0.6s ease-in-out, opacity 0.6s ease-in-out, transform 0.6s ease-in-out;
+        }
+
+        .suggestion-container.visible {
+            opacity: 1;
+            max-height: 500px; /* Đặt một chiều cao đủ lớn */
+            transform: translateY(0);
+        }
+
+        .suggestion-card {
+            background-color: var(--white-color);
+            border-radius: 8px;
+            box-shadow: 0 2px 8px var(--shadow-color);
+            overflow: hidden;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .suggestion-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .suggestion-card img {
+            width: 100%;
+            height: 140px;
+            object-fit: cover;
+            display: block;
+        }
+
+        .suggestion-card-info {
+            padding: 12px;
+        }
+
+        .suggestion-card h4 {
+            margin: 0 0 5px 0;
+            font-size: 1em;
+            font-weight: 700;
+            color: var(--secondary-color);
+        }
+
+        .star-rating {
+            font-size: 0.9em;
+        }
+
+        .star-rating .star {
+            color: #ffd700; /* Màu vàng cho sao */
+        }
+
+        .star-rating .star-empty {
+            color: #ccc; /* Màu xám cho sao rỗng */
+        }
+
 
         footer { text-align: center; padding: 30px 0; background: var(--text-dark); color: var(--text-light); }
 
@@ -391,57 +458,58 @@
         <main>
             <div class="section-wrapper">
                 <h2 class="section-title">Những Nét Đặc Trưng</h2>
-
+            
                 <div class="collapsible-section">
-                    <div class="collapsible-header" onclick="toggleSection(this)">
+                    <div class="collapsible-header" onclick="toggleSection(this)" data-feature="vi-tri">
                         <h3>📍 Vị trí "Cửa ngõ" chiến lược</h3>
                         <span class="arrow">&#9660;</span>
                     </div>
                     <div class="collapsible-content">
                         <p>Thái Nguyên là trung tâm của vùng trung du miền núi Bắc Bộ, đóng vai trò là cầu nối quan trọng giữa các tỉnh miền núi và đồng bằng sông Hồng. Chỉ cách Hà Nội 80km, vị trí này không chỉ thuận lợi cho giao thương kinh tế mà còn biến Thái Nguyên thành điểm khởi đầu lý tưởng để khám phá toàn bộ vùng Việt Bắc.</p>
-                    </div>
+                        </div>
                 </div>
-
+            
                 <div class="collapsible-section">
-                    <div class="collapsible-header" onclick="toggleSection(this)">
+                    <div class="collapsible-header" onclick="toggleSection(this)" data-feature="lich-su">
                         <h3>🏛️ "Thủ đô Gió ngàn" - Cái nôi Cách mạng</h3>
                         <span class="arrow">&#9660;</span>
                     </div>
                     <div class="collapsible-content">
                         <p>Trong kháng chiến chống Pháp, Thái Nguyên vinh dự được chọn làm "An Toàn Khu" (ATK), là đại bản doanh của Trung ương Đảng và Chính phủ. Di tích lịch sử quốc gia đặc biệt ATK Định Hóa ngày nay là một "địa chỉ đỏ" để du khách về nguồn, tìm hiểu về một giai đoạn lịch sử hào hùng của dân tộc tại những địa danh như đồi Tỉn Keo, khuôn Tát, đèo De, núi Hồng...</p>
-                    </div>
+                         </div>
                 </div>
-
+            
                 <div class="collapsible-section">
-                    <div class="collapsible-header" onclick="toggleSection(this)">
+                    <div class="collapsible-header" onclick="toggleSection(this)" data-feature="thien-nhien">
                         <h3>🏞️ Thiên nhiên hữu tình, đa dạng</h3>
                         <span class="arrow">&#9660;</span>
                     </div>
                     <div class="collapsible-content">
                         <p>Thái Nguyên sở hữu vẻ đẹp đa dạng từ những dãy núi hùng vĩ của vòng cung Ngân Sơn - Yên Lạc cho đến vùng hồ Núi Cốc thơ mộng. Nơi đây còn có nhiều cảnh quan thiên nhiên kỳ thú như hang Phượng Hoàng, suối Mỏ Gà, thác Bảy Tầng... tạo điều kiện phát triển du lịch sinh thái và mạo hiểm.</p>
-                    </div>
+                         </div>
                 </div>
-
+            
                 <div class="collapsible-section">
-                    <div class="collapsible-header" onclick="toggleSection(this)">
+                    <div class="collapsible-header" onclick="toggleSection(this)" data-feature="van-hoa-tra">
                         <h3>🍵 Văn hóa Trà "Đệ nhất danh trà"</h3>
                         <span class="arrow">&#9660;</span>
                     </div>
                     <div class="collapsible-content">
                         <p>Nhắc đến Thái Nguyên là nhắc đến chè. Vùng chè đặc sản Tân Cương đã nổi danh khắp trong và ngoài nước với hương thơm cốm non đặc trưng và vị chát dịu, hậu ngọt sâu. Du lịch Thái Nguyên, du khách có cơ hội tham quan những đồi chè xanh mướt, tự tay hái chè, sao chè và thưởng thức những ấm trà nóng hổi ngay tại nơi sản sinh ra nó.</p>
-                    </div>
+                         </div>
                 </div>
-
+            
                 <div class="collapsible-section">
-                    <div class="collapsible-header" onclick="toggleSection(this)">
+                    <div class="collapsible-header" onclick="toggleSection(this)" data-feature="van-hoa-dan-toc">
                         <h3>👥 Vườn hoa văn hóa các dân tộc</h3>
                         <span class="arrow">&#9660;</span>
                     </div>
                     <div class="collapsible-content">
                         <p>Thái Nguyên là mái nhà chung của 8 dân tộc anh em (Kinh, Tày, Nùng, Sán Dìu, H'Mông, Sán Chay, Dao, Hoa). Sự đa dạng này tạo nên một bức tranh văn hóa đầy màu sắc, thể hiện qua trang phục, lễ hội (Lồng Tồng của người Tày), ẩm thực và các làng nghề thủ công truyền thống. Bảo tàng Văn hóa các dân tộc Việt Nam đặt tại Thái Nguyên chính là nơi lưu giữ và trưng bày di sản văn hóa phong phú này.</p>
-                    </div>
+                         </div>
                 </div>
-                        <div class="collapsible-section">
+            
+                <div class="collapsible-section">
                     <div class="collapsible-header" onclick="toggleSection(this)">
                         <h3>🍲 Ẩm thực đặc sắc</h3>
                         <span class="arrow">&#9660;</span>
@@ -465,8 +533,8 @@
 
     <script>
         // //Bảo trì
-        alert("🌎 Website và 📱 APP APK đang đóng để đảm bảo bản quyền cho cuộc thi Quảng Bá Du Lịch - Thái Nguyên Almazing. Vui lòng quay lại sau ngày 25/06/2025");
-        document.body.innerHTML = "<h1>Trang đang bảo trì để đảm bảo bản quyền cho cuộc thi Quảng Bá Du Lịch - Thái Nguyên Almazing. Vui lòng quay lại sau.</h1>";
+        // alert("🌎 Website và 📱 APP APK đang đóng để đảm bảo bản quyền cho cuộc thi Quảng Bá Du Lịch - Thái Nguyên Almazing. Vui lòng quay lại sau ngày 25/06/2025");
+        // document.body.innerHTML = "<h1>Trang đang bảo trì để đảm bảo bản quyền cho cuộc thi Quảng Bá Du Lịch - Thái Nguyên Almazing. Vui lòng quay lại sau.</h1>";
 
 
         // //Bảo trì
@@ -502,10 +570,134 @@
             }
         }
 
-        // --- LOGIC CHO CÁC MỤC THU GỌN ---
+        // --- LOGIC CHO CÁC MỤC THU GỌN VÀ HIỂN THỊ GỢI Ý ---
+
+        // 1. Kho dữ liệu các địa điểm gợi ý
+        const suggestionData = {
+            'vi-tri': [
+                { 
+                    name: "ATK Định Hóa", 
+                    image: "https://baothainguyen.vn/file/oldimage/baothainguyen/UserFiles/image/ATK24022022mhoa(1).jpg", 
+                    rating: 5 
+                },
+                { 
+                    name: "Núi Văn - Núi Võ", 
+                    image: "https://media.vnptit3.vn/resources/portal//Images/TNN/thienvn.tnn/N%C3%BAi%20v%C4%83n%20n%C3%BAi%20v%C3%B5/nuivannuivo_637677338826986352.jpg", 
+                    rating: 4.5 
+                }
+            ],
+            'lich-su': [
+                { 
+                    name: "Di tích ATK Định Hóa", 
+                    image: "https://baothainguyen.vn/file/oldimage/baothainguyen/UserFiles/image/ATK24022022mhoa(1).jpg", 
+                    rating: 5 
+                },
+                { 
+                    name: "Đền Đuổm", 
+                    image: "https://hnm.1cdn.vn/2020/02/14/hanoimoi.com.vn-uploads-images-tuandiep-2020-02-14-_den_duom-01-.jpg", 
+                    rating: 4.6 
+                }
+            ],
+            'thien-nhien': [
+                { 
+                    name: "Hồ Núi Cốc", 
+                    image: "https://sinhtour.vn/wp-content/uploads/2024/07/ho-nui-coc.jpg", 
+                    rating: 4.8 
+                },
+                { 
+                    name: "Suối Cửa Tử", 
+                    image: "https://vcdn1-dulich.vnecdn.net/2024/05/15/238A7169-1715764787.jpg?w=1200&h=0&q=100&dpr=1&fit=crop&s=ez6IEbD56OGwECApPx1V3w", 
+                    rating: 4.7 
+                }
+            ],
+            'van-hoa-tra': [
+                { 
+                    name: "Đồi chè Tân Cương", 
+                    image: "https://i0.wp.com/loctancuong.com/wp-content/uploads/2024/01/doi-che-tan-cuong-4.jpg?ssl=1", 
+                    rating: 4.9 
+                },
+                { 
+                    name: "Không gian văn hoá trà", 
+                    image: "https://bizweb.dktcdn.net/100/201/525/files/khong-gian-van-hoa-che-tan-cuong-thai-nguyen.jpg?v=1708480921370", 
+                    rating: 4.6 
+                }
+            ],
+            'van-hoa-dan-toc': [
+                { 
+                    name: "Bảo tàng các Dân tộc", 
+                    image: "https://upload.wikimedia.org/wikipedia/commons/1/16/B%E1%BA%A3o_t%C3%A0ng_V%C4%83n_h%C3%B3a_c%C3%A1c_D%C3%A2n_t%E1%BB%99c_Vi%E1%BB%87t_Nam.jpg", 
+                    rating: 4.8 
+                },
+                { 
+                    name: "Làng nhà sàn Thái Hải", 
+                    image: "https://media.vnptit3.vn/resources/portal/Images/TNN/thienvn.tnn/Th%C3%A1i%20h%E1%BA%A3i/thaihai_637653285362395504.jpg", 
+                    rating: 4.7 
+                }
+            ]
+        };
+
+        // 2. Hàm tạo các ngôi sao đánh giá
+        function createStarRating(rating) {
+            let stars = '';
+            const totalStars = 5;
+            for (let i = 1; i <= totalStars; i++) {
+                if (i <= rating) {
+                    stars += '<span class="star">★</span>'; // Sao đầy
+                } else if (i - 0.5 <= rating) {
+                    stars += '<span class="star">★</span>'; // Vẫn hiện sao đầy cho 0.5
+                } else {
+                    stars += '<span class="star star-empty">☆</span>'; // Sao rỗng
+                }
+            }
+            return `<div class="star-rating">${stars} (${rating})</div>`;
+        }
+
+        // 3. Hàm chính để mở/đóng section và hiển thị gợi ý
         function toggleSection(header) {
             const section = header.parentNode;
-            section.classList.toggle('open');
+            const content = section.querySelector('.collapsible-content');
+            const featureKey = header.getAttribute('data-feature');
+            const suggestions = suggestionData[featureKey];
+
+            // Kiểm tra xem section có đang mở không
+            const isOpen = section.classList.contains('open');
+
+            if (!isOpen) {
+                // Nếu section đang đóng -> Mở nó ra
+                section.classList.add('open');
+
+                // Chỉ tạo và hiển thị gợi ý nếu có dữ liệu và chưa được tạo trước đó
+                if (suggestions && !content.querySelector('.suggestion-container')) {
+                    const container = document.createElement('div');
+                    container.className = 'suggestion-container';
+
+                    suggestions.forEach(item => {
+                        const card = `
+                            <div class="suggestion-card">
+                                <img src="${item.image}" alt="${item.name}">
+                                <div class="suggestion-card-info">
+                                    <h4>${item.name}</h4>
+                                    ${createStarRating(item.rating)}
+                                </div>
+                            </div>
+                        `;
+                        container.innerHTML += card;
+                    });
+                    content.appendChild(container);
+
+                    // Thêm class 'visible' sau một khoảng delay ngắn để kích hoạt animation
+                    setTimeout(() => {
+                        container.classList.add('visible');
+                    }, 100); // 100ms là đủ để trình duyệt nhận diện và tạo hiệu ứng
+                }
+            } else {
+                // Nếu section đang mở -> Đóng nó lại
+                const suggestionContainer = content.querySelector('.suggestion-container');
+                if (suggestionContainer) {
+                    suggestionContainer.classList.remove('visible');
+                }
+                section.classList.remove('open');
+            }
         }
 
         // --- LOGIC CHO MENU HAMBURGER ---
@@ -565,7 +757,6 @@
         document.body.addEventListener('touchstart', startMusicFirstInteraction);
         window.addEventListener('scroll', startMusicFirstInteraction);
     </script>
-    <!-- Google tag (gtag.js) -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-MDGVXG93S8"></script>
     <script>
       window.dataLayer = window.dataLayer || [];
