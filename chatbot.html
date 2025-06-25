@@ -149,20 +149,29 @@
             height: 100vh;
             display: flex;
             flex-direction: column;
-            position: relative; 
+            position: relative; /* Giữ nguyên */
+        }
 
-       
+        /* Ẩn lớp phủ đi mặc định */
         .chatbot-container::after {
             content: '';
             position: absolute;
             bottom: 0;
             left: 0;
             width: 100%;
-            height: 50px; /* Điều chỉnh chiều cao này nếu cần */
-            background-color: var(--white-color); /* Dùng màu nền của chatbot */
+            height: 40px; /* Điều chỉnh chiều cao này nếu cần */
+            background-color: var(--white-color);
             z-index: 10;
+            opacity: 0; /* Mặc định cho nó trong suốt */
+            transition: opacity ; /* Thêm hiệu ứng mờ ảo cho đẹp */
+            pointer-events: none; /* Đảm bảo không bắt được sự kiện chuột */
         }
-       
+
+        /* Khi container có class 'iframe-loaded', lớp phủ sẽ hiện ra */
+        .chatbot-container.iframe-loaded::after {
+            opacity: 1;
+        }
+            
 
         .chatbot-iframe {
             flex: 1;
@@ -281,6 +290,24 @@
                     navMenu.classList.remove('is-active');
                 }
             });
+        });
+        document.addEventListener("DOMContentLoaded", function() {
+            // ... các đoạn code cũ cho menu giữ nguyên ...
+
+            // --- BẮT ĐẦU ĐOẠN MÃ MỚI ---
+            const chatbotIframe = document.querySelector('.chatbot-iframe');
+            const chatbotContainer = document.querySelector('.chatbot-container');
+
+            if (chatbotIframe && chatbotContainer) {
+                chatbotIframe.addEventListener('load', () => {
+                    // Sự kiện 'load' đảm bảo iframe đã tải xong.
+                    // Thêm một độ trễ nhỏ để chắc chắn mọi script bên trong iframe đã chạy xong.
+                    setTimeout(() => {
+                        chatbotContainer.classList.add('iframe-loaded');
+                    }, 500); // Đợi thêm 500ms cho chắc chắn
+                });
+            }
+            // --- KẾT THÚC ĐOẠN MÃ MỚI ---
         });
     </script>
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-MDGVXG93S8"></script>
