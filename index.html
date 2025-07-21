@@ -730,14 +730,8 @@
         }
 
         window.addEventListener('scroll', handleScrollImageLink);
-        handleScrollImageLink(); // Gọi khi tải trang
-
-        (function(){if(!window.chatbase||window.chatbase("getState")!=="initialized"){window.chatbase=(...arguments)=>{if(!window.chatbase.q){window.chatbase.q=[]}window.chatbase.q.push(arguments)};window.chatbase=new Proxy(window.chatbase,{get(target,prop){if(prop==="q"){return target.q}return(...args)=>target(prop,...args)}})}const onLoad=function(){const script=document.createElement("script");script.src="https://www.chatbase.co/embed.min.js";script.id="Y36JqxzS7N6nBgADgNxNM";script.domain="www.chatbase.co";document.body.appendChild(script)};if(document.readyState==="complete"){onLoad()}else{window.addEventListener("load",onLoad)}})();
-
-        // =========================================================
-        // PHẦN 2: THÊM JAVASCRIPT ĐỂ PHÁT NHẠC
-        // Kích hoạt bằng tương tác đầu tiên (cuộn, click, chạm) để đảm bảo hoạt động
-        // =========================================================
+        handleScrollImageLink(); 
+       
         const backgroundMusic = document.getElementById('background-music');
 
         function startMusicFirstInteraction() {
